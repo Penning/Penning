@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.example.penning;
+package edu.umich.penning;
 
 import android.content.Context;
 import android.util.AttributeSet;
