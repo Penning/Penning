@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.example.clbtxt;
+package com.example.penning;
 
 import android.content.Context;
 import android.util.AttributeSet;

@@ -1,4 +1,4 @@
-package com.example.clbtxt;
+package com.example.penning;
 
 public class Event {
 
@@ -8,5 +8,4 @@ public class Event {
 	public EventType event;
 	public long curserLocation;
 	public String insertedText;
-	
 }

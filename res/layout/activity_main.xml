@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <com.example.clbtxt.CollabEditText
+    <com.example.penning.CollabEditText
         android:id="@+id/editText1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,6 +22,6 @@
      
 
         <requestFocus />
-    </com.example.clbtxt.CollabEditText>
+    </com.example.penning.CollabEditText>
 
 </RelativeLayout>
