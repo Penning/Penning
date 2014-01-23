@@ -16,7 +16,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         context = this;
         et = (EditText) findViewById(R.id.collabEditText1);
-        et.addTextChangedListener(new CollabEditText());
+        et.addTextChangedListener(new CollabEditTextListener());
     }
 
 

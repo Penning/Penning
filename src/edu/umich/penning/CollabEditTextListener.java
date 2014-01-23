@@ -5,20 +5,15 @@ package edu.umich.penning;
 
 import java.util.Stack;
 
-import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.AttributeSet;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnKeyListener;
-import android.widget.EditText;
 
 /**
  * @author adoxner, pramodsum, Tim-Wood
+ * Listener class for the main TextEdit which detects user input and acts accordingly
  *
  */
-public class CollabEditText implements TextWatcher {
+public class CollabEditTextListener implements TextWatcher {
 	public Stack<Event> undoStack = new Stack<Event>();
 	public Stack<Event> redoStack = new Stack<Event>();
 	protected String fullText;
@@ -39,33 +34,6 @@ public class CollabEditText implements TextWatcher {
 //			// we don't handle this case
 //			return;
 //		}
-//	}
-
-	/**
-	 * @param context
-	 */
-//	public CollabEditText(Context context) {
-//		super(context);
-//		// TODO Auto-generated constructor stub
-//	}
-//
-//	/**
-//	 * @param context
-//	 * @param attrs
-//	 */
-//	public CollabEditText(Context context, AttributeSet attrs) {
-//		super(context, attrs);
-//		// TODO Auto-generated constructor stub
-//	}
-//
-//	/**
-//	 * @param context
-//	 * @param attrs
-//	 * @param defStyle
-//	 */
-//	public CollabEditText(Context context, AttributeSet attrs, int defStyle) {
-//		super(context, attrs, defStyle);
-//		// TODO Auto-generated constructor stub
 //	}
 	
 	public void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
