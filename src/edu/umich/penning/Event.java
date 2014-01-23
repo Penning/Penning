@@ -6,7 +6,10 @@ public class Event {
 	public String sessionID;
 	
 	public EventType event;
-	public long curserLocation;
-	public String insertedText;
+	public int cursorLocation;
+	public char text;
 	
+	Event(EventType e) {
+		event = e;
+	}
 }

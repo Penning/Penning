@@ -9,7 +9,7 @@
     tools:context=".MainActivity" >
 
     <edu.umich.penning.CollabEditText
-        android:id="@+id/editText1"
+        android:id="@+id/collabEditText1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
