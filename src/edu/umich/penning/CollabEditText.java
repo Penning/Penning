@@ -8,9 +8,7 @@ import java.util.Stack;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 /**
  * @author adoxner, pramodsum, Tim-Wood
@@ -37,8 +35,6 @@ public class CollabEditText extends EditText {
 			return;
 		}
 	}
-	
-	
 
 	/**
 	 * @param context
@@ -68,11 +64,8 @@ public class CollabEditText extends EditText {
 	}
 	
 	protected void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
-		System.out.println("Key Pressed: " + text);
-		
-		if(text != "") {
-			char c = text.toString().charAt(start - 1);
-			System.out.println("C: " + c);
+		if(text.length() > 0) {
+			char c = text.toString().charAt(text.length() - 1);
 			insertChar(c, start, lengthBefore, lengthAfter);
 		}
 	}
@@ -80,8 +73,8 @@ public class CollabEditText extends EditText {
 	public void insertChar(char c, int start, int lengthBefore, int lengthAfter) {
 		Event e = new Event(EventType.insert);
 		e.text = c;
-		e.cursorLocation = start;
-		System.out.println("Char inserted: " + c);
+		e.cursorLocation = this.getSelectionStart();
+		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
 		undoStack.add(e);
 	}
 	
