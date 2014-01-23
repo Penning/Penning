@@ -8,7 +8,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <edu.umich.penning.CollabEditText
+    <EditText
         android:id="@+id/collabEditText1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,6 +22,6 @@
      
 
         <requestFocus />
-    </edu.umich.penning.CollabEditText>
+    </EditText>
 
 </RelativeLayout>

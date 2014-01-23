@@ -6,84 +6,99 @@ package edu.umich.penning;
 import java.util.Stack;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnKeyListener;
 import android.widget.EditText;
 
 /**
  * @author adoxner, pramodsum, Tim-Wood
  *
  */
-public class CollabEditText extends EditText {
+public class CollabEditText implements TextWatcher {
 	public Stack<Event> undoStack = new Stack<Event>();
 	public Stack<Event> redoStack = new Stack<Event>();
+	protected String fullText;
 	
 	/*
 	 * Tracks cursor changes
 	 */
-	@Override 
-	protected void onSelectionChanged(int selStart, int selEnd) {
-		// TODO send change to server
-		
-		if (selStart == selEnd){
-			// cursor moved, nothing selected
-			
-			System.out.println("Curser moved to " + selStart);
-			
-		}else{
-			// we don't handle this case
-			return;
-		}
-	}
+//	@Override 
+//	protected void onSelectionChanged(int selStart, int selEnd) {
+//		// TODO send change to server
+//		
+//		if (selStart == selEnd){
+//			// cursor moved, nothing selected
+//			
+//			System.out.println("Curser moved to " + selStart);
+//			
+//		}else{
+//			// we don't handle this case
+//			return;
+//		}
+//	}
 
 	/**
 	 * @param context
 	 */
-	public CollabEditText(Context context) {
-		super(context);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param context
-	 * @param attrs
-	 */
-	public CollabEditText(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param context
-	 * @param attrs
-	 * @param defStyle
-	 */
-	public CollabEditText(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		// TODO Auto-generated constructor stub
-	}
+//	public CollabEditText(Context context) {
+//		super(context);
+//		// TODO Auto-generated constructor stub
+//	}
+//
+//	/**
+//	 * @param context
+//	 * @param attrs
+//	 */
+//	public CollabEditText(Context context, AttributeSet attrs) {
+//		super(context, attrs);
+//		// TODO Auto-generated constructor stub
+//	}
+//
+//	/**
+//	 * @param context
+//	 * @param attrs
+//	 * @param defStyle
+//	 */
+//	public CollabEditText(Context context, AttributeSet attrs, int defStyle) {
+//		super(context, attrs, defStyle);
+//		// TODO Auto-generated constructor stub
+//	}
 	
-	protected void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
+	public void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
 		if(text.length() > 0) {
-			char c = text.toString().charAt(text.length() - 1);
-			insertChar(c, start, lengthBefore, lengthAfter);
+			if(lengthBefore < lengthAfter) {
+//				System.out.println("before: " + lengthBefore + "\nafter: " + lengthAfter);
+				char c = text.toString().charAt(text.length() - 1);
+				insertChar(c, lengthAfter);
+				fullText = text.toString();
+			}
+			else if(lengthAfter < lengthBefore) {
+//				System.out.println("before: " + lengthBefore + "\nafter: " + lengthAfter);
+				char c = fullText.charAt(fullText.length() - 1);
+				removeChar(c, lengthBefore, lengthAfter);
+				fullText = text.toString();
+			}
+			fullText = text.toString();
 		}
 	}
 
-	public void insertChar(char c, int start, int lengthBefore, int lengthAfter) {
+	public void insertChar(char c, int lengthAfter) {
 		Event e = new Event(EventType.insert);
 		e.text = c;
-		e.cursorLocation = this.getSelectionStart();
+		e.cursorLocation = lengthAfter + 1;
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
 		undoStack.add(e);
 	}
 	
-	public void removeChar(KeyEvent keyEvent) {
+	public void removeChar(char c, int lengthBefore, int lengthAfter) {
 		Event e = new Event(EventType.delete);
-		e.cursorLocation = this.getSelectionStart();
-		CharSequence enteredText = this.getText().toString();
-		e.text = enteredText.subSequence(e.cursorLocation, 1).charAt(0);
-		System.out.println("Char removed: " + e.text);
+		e.text = c;
+		e.cursorLocation = lengthAfter;
+		System.out.println("Char removed: " + c + " @ " + e.cursorLocation);
 		undoStack.add(e);
 	}
 	
@@ -106,5 +121,19 @@ public class CollabEditText extends EditText {
 	public void redo() {
 		//Do redo stuff
 		undoStack.add(new Event(EventType.redo));
+	}
+
+	@Override
+	public void afterTextChanged(Editable s) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int before, int after) {
+		// TODO Auto-generated method stub
+		if(before > after) { 
+			System.out.println("GOING TO DELETE CHARACTER FROM \"" + s + "\"");
+			fullText = s.toString();
+		}
 	}
 }
