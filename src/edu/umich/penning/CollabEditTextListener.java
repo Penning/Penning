@@ -7,6 +7,7 @@ import java.util.Stack;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.Toast;
 
 /**
  * @author adoxner, pramodsum, Tim-Wood
@@ -71,6 +72,7 @@ public class CollabEditTextListener implements TextWatcher {
 	}
 	
 	public void undo() {
+		Toast.makeText(this, "Undo Pressed" , Toast.LENGTH_SHORT)
 		if(undoStack.empty()) return;
 		
 		//get last event from undoStack
@@ -88,6 +90,7 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void redo() {
 		//Do redo stuff
+		Toast.makeText(this, "Redo Pressed" , Toast.LENGTH_SHORT)
 		undoStack.add(new Event(EventType.redo));
 	}
 
