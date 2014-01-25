@@ -18,6 +18,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        if (listener == null)
+        	listener = new CollabEditTextListener();
+        
         setContentView(R.layout.activity_main);
         context = this;
         et = (EditText) findViewById(R.id.collabEditText1);
