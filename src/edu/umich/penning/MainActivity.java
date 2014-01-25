@@ -8,7 +8,7 @@ import android.widget.EditText;
 
 public class MainActivity extends Activity {
 	public static Context context;
-	public EditText et;
+	public static EditText et;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

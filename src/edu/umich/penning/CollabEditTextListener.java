@@ -41,31 +41,31 @@ public class CollabEditTextListener implements TextWatcher {
 			if(lengthBefore < lengthAfter) {
 //				System.out.println("before: " + lengthBefore + "\nafter: " + lengthAfter);
 				char c = text.toString().charAt(text.length() - 1);
-				insertChar(c, lengthAfter);
+				insertChar(c);
 				fullText = text.toString();
 			}
 			else if(lengthAfter < lengthBefore) {
 //				System.out.println("before: " + lengthBefore + "\nafter: " + lengthAfter);
 				char c = fullText.charAt(fullText.length() - 1);
-				removeChar(c, lengthBefore, lengthAfter);
+				removeChar(c);
 				fullText = text.toString();
 			}
 			fullText = text.toString();
 		}
 	}
 
-	public void insertChar(char c, int lengthAfter) {
+	public void insertChar(char c) {
 		Event e = new Event(EventType.insert);
 		e.text = c;
-		e.cursorLocation = lengthAfter + 1;
+		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
 		undoStack.add(e);
 	}
 	
-	public void removeChar(char c, int lengthBefore, int lengthAfter) {
+	public void removeChar(char c) {
 		Event e = new Event(EventType.delete);
 		e.text = c;
-		e.cursorLocation = lengthAfter;
+		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char removed: " + c + " @ " + e.cursorLocation);
 		undoStack.add(e);
 	}
