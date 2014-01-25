@@ -54,7 +54,11 @@ public class CollabEditTextListener implements TextWatcher {
 	}
 	
 	public void undo() {
+<<<<<<< HEAD
 //		Toast.makeText(this, "Undo Pressed" , Toast.LENGTH_SHORT)
+=======
+		//Toast.makeText(, "Undo Pressed" , Toast.LENGTH_SHORT);
+>>>>>>> master
 		if(undoStack.empty()) return;
 		
 		//get last event from undoStack
@@ -80,7 +84,11 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void redo() {
 		//Do redo stuff
+<<<<<<< HEAD
 //		Toast.makeText(this, "Redo Pressed" , Toast.LENGTH_SHORT)
+=======
+		//Toast.makeText(app.getBaseContext(), "Redo Pressed" , Toast.LENGTH_SHORT);
+>>>>>>> master
 		undoStack.add(new Event(EventType.redo));
 	}
 
