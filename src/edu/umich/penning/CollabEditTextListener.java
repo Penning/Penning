@@ -19,24 +19,6 @@ public class CollabEditTextListener implements TextWatcher {
 	public Stack<Event> redoStack = new Stack<Event>();
 	protected String fullText;
 	
-	/*
-	 * Tracks cursor changes
-	 */
-//	@Override 
-//	protected void onSelectionChanged(int selStart, int selEnd) {
-//		// TODO send change to server
-//		
-//		if (selStart == selEnd){
-//			// cursor moved, nothing selected
-//			
-//			System.out.println("Curser moved to " + selStart);
-//			
-//		}else{
-//			// we don't handle this case
-//			return;
-//		}
-//	}
-	
 	public void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
 		if(text.length() > 0) {
 			if(lengthBefore < lengthAfter) {
@@ -72,17 +54,25 @@ public class CollabEditTextListener implements TextWatcher {
 	}
 	
 	public void undo() {
-		Toast.makeText(this, "Undo Pressed" , Toast.LENGTH_SHORT)
+//		Toast.makeText(this, "Undo Pressed" , Toast.LENGTH_SHORT)
 		if(undoStack.empty()) return;
 		
 		//get last event from undoStack
 		Event e = undoStack.pop();
+		String text = MainActivity.et.getText().toString();
 		
 		if(e.event == EventType.insert) {
 			//remove last char
+			CharSequence oldSeq = text.subSequence(e.cursorLocation - 1, e.cursorLocation);
+			text.replace(oldSeq, oldSeq.subSequence(0, oldSeq.length() - 1).toString());
+			removeChar(e.text);
 		}
 		else if(e.event == EventType.delete) {
 			//re-insert last char
+			CharSequence oldSeq = text.subSequence(e.cursorLocation - 1, e.cursorLocation);
+			String newSeq = oldSeq + Character.toString(e.text);
+			text.replace(oldSeq, newSeq);
+			insertChar(e.text);
 		}
 		
 		redoStack.add(new Event(EventType.undo));
@@ -90,7 +80,7 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void redo() {
 		//Do redo stuff
-		Toast.makeText(this, "Redo Pressed" , Toast.LENGTH_SHORT)
+//		Toast.makeText(this, "Redo Pressed" , Toast.LENGTH_SHORT)
 		undoStack.add(new Event(EventType.redo));
 	}
 
