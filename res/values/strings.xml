@@ -4,5 +4,7 @@
     <string name="app_name">ClbTxt</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="undo_button">Undo</string>
+    <string name="redo_button">Redo</string>
 
 </resources>
