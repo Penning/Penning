@@ -9,6 +9,7 @@ import android.widget.EditText;
 public class MainActivity extends Activity {
 	public static Context context;
 	public static EditText et;
+	private CollabEditTextListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,9 +17,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         context = this;
         et = (EditText) findViewById(R.id.collabEditText1);
-        et.addTextChangedListener(new CollabEditTextListener());
+        et.addTextChangedListener(listener);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
