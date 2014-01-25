@@ -7,6 +7,7 @@ import java.util.Stack;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.EditText;
 import android.widget.Toast;
 
 /**
@@ -15,9 +16,15 @@ import android.widget.Toast;
  *
  */
 public class CollabEditTextListener implements TextWatcher {
+	
 	public Stack<Event> undoStack = new Stack<Event>();
 	public Stack<Event> redoStack = new Stack<Event>();
 	protected String fullText;
+	private EditText owningContext;
+	
+	public CollabEditTextListener(EditText e){
+		owningContext = e;
+	}
 	
 	/*
 	 * Tracks cursor changes
@@ -72,7 +79,6 @@ public class CollabEditTextListener implements TextWatcher {
 	}
 	
 	public void undo() {
-		//Toast.makeText(, "Undo Pressed" , Toast.LENGTH_SHORT);
 		if(undoStack.empty()) return;
 		
 		//get last event from undoStack

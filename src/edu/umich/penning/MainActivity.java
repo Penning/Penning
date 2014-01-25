@@ -7,12 +7,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	public static Context context;
 	public static EditText et;
-	private Button undoButton;
-	private Button redoButton;
 	private CollabEditTextListener listener;
 
     @Override
@@ -20,7 +19,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         
         if (listener == null)
-        	listener = new CollabEditTextListener();
+        	listener = new CollabEditTextListener(et);
         
         setContentView(R.layout.activity_main);
         context = this;
@@ -40,9 +39,11 @@ public class MainActivity extends Activity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.undo_button:
+            	Toast.makeText(this, "Undo Pressed" , Toast.LENGTH_SHORT).show();
             	listener.undo();
                 return true;
             case R.id.redo_button:
+            	Toast.makeText(this, "Redo Pressed" , Toast.LENGTH_SHORT).show();
             	listener.redo();
                 return true;
             default:
