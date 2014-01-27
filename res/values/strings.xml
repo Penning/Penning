@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ClbTxt</string>
+    <string name="app_name">Penning</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="undo_button">Undo</string>
     <string name="redo_button">Redo</string>
+    <string name="join_session">Join session</string>
+    <string name="create_session">Create session</string>
+    <string name="leave_session">Leave session</string>
 
 </resources>
