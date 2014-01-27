@@ -13,8 +13,8 @@ import android.widget.EditText;
  *
  */
 public class CollabEditTextListener implements TextWatcher {
-	public Stack<Event> undoStack = new Stack<Event>();
-	public Stack<Event> redoStack = new Stack<Event>();
+	protected Stack<Event> undoStack = new Stack<Event>();
+	protected Stack<Event> redoStack = new Stack<Event>();
 	protected String fullText;
 	private EditText owningContext;
 	
@@ -45,7 +45,7 @@ public class CollabEditTextListener implements TextWatcher {
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
-		undoStack.add(e);
+		undoStack.push(e);
 	}
 	
 	public void removeChar(char c) {
@@ -53,7 +53,7 @@ public class CollabEditTextListener implements TextWatcher {
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char removed: " + c + " @ " + e.cursorLocation + 1);
-		undoStack.add(e);
+		undoStack.push(e);
 	}
 	
 	public void undo() {
@@ -62,21 +62,22 @@ public class CollabEditTextListener implements TextWatcher {
 		//get last event from undoStack
 		Event e = undoStack.pop();
 		System.out.println("Top of undoStack: " + e.text);
+		System.out.println("Next Top of undoStack: " + undoStack.peek().text);
 		
 		if(e.event == EventType.insert) {
-			//re-insert last char0
+			//re-insert last char
 			MainActivity.et.setText(MainActivity.et.getText().delete(e.cursorLocation - 1, e.cursorLocation));
 			MainActivity.et.setSelection(e.cursorLocation - 1);
 			e.event = EventType.delete;
 		}
 		else if(e.event == EventType.delete) {
-			//remove last char+
+			//remove last inserted char
 			MainActivity.et.setText(MainActivity.et.getText().insert(e.cursorLocation, Character.toString(e.text)));
 			MainActivity.et.setSelection(e.cursorLocation + 1);
 			e.event = EventType.insert;
 		}
 	
-		redoStack.add(e);
+		redoStack.push(e);
 	}
 	
 	public void redo() {
@@ -98,7 +99,7 @@ public class CollabEditTextListener implements TextWatcher {
 			e.event = EventType.insert;
 		}
 	
-		undoStack.add(e);
+		undoStack.push(e);
 	}
 
 	@Override
