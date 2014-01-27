@@ -29,6 +29,7 @@ import edu.umich.imlc.collabrify.client.CollabrifyListener.CollabrifySessionList
 import edu.umich.imlc.collabrify.client.CollabrifyParticipant;
 import edu.umich.imlc.collabrify.client.CollabrifySession;
 import edu.umich.imlc.collabrify.client.exceptions.CollabrifyException;
+import edu.umich.imlc.collabrify.client.exceptions.CollabrifyUnrecoverableException;
 //import edu.umich.imlc.collabrify.collabrify_dummy_app.MainActivity;
 
 public class MainActivity extends Activity implements
@@ -118,7 +119,6 @@ public class MainActivity extends Activity implements
             	return true;
             case R.id.join_session:
             	getSessionId();
-            	doJoinSession();
             	return true;
             case R.id.leave_session:
             	doLeaveSession();
@@ -132,6 +132,13 @@ public class MainActivity extends Activity implements
 	public void onError(CollabrifyException e) {
 		// print error
 		Log.e(TAG, "error: ", e);
+		
+		if(e instanceof CollabrifyUnrecoverableException)
+	    {
+	      //the client has been reset and we are no longer in a session
+	      onDisconnect();
+	    }
+	    Log.e(TAG, "error", e);
 	}
 
 	@Override
@@ -147,6 +154,10 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onSessionCreated(CollabrifySession session) {
+		
+		sessionId = session.id();
+	    sessionName = session.name();
+		
 		System.out.println("Session created: " + session.id());
 		showSessionId();
 	}
@@ -219,16 +230,23 @@ public class MainActivity extends Activity implements
 	
 	public void doCreateSession()
 	  {
+		
+		if (myClient.inSession()){
+			showToast("Already in session " + sessionId);
+			return;
+		}
 	    try
 	    {
 	      Random rand = new Random();
 	      sessionName = "Test " + rand.nextInt(Integer.MAX_VALUE);
+	      
 	      myClient.createSession(sessionName, tags, password, 0,
 	          createSessionListener, sessionListener);
 	    }
 	    catch( CollabrifyException e )
 	    {
-	      onError(e);
+	    	Log.w(TAG, "createSession() error");
+	    	onError(e);
 	    }
 	  }
 	
@@ -247,7 +265,8 @@ public class MainActivity extends Activity implements
 		    @Override
 		    public void onClick(DialogInterface dialog, int which) {
 		        sessionId = Long.parseLong( input.getText().toString() );
-		    	System.out.println(input.getText().toString());
+		    	System.out.println(sessionId);
+		    	doJoinSession();
 		    }
 		});
 		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -261,32 +280,28 @@ public class MainActivity extends Activity implements
 	}
 	
 	public void showSessionId(){
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-				context);
- 
-			// set title
-			alertDialogBuilder.setTitle("Your session ID:");
- 
-			// set dialog message
-			alertDialogBuilder
-				.setMessage(String.valueOf( sessionId))
-				.setCancelable(false)
-				.setPositiveButton("OK", null)
-				  /*
-				.setNegativeButton("No",new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog,int id) {
-						// if this button is clicked, just close
-						// the dialog box and do nothing
-						dialog.cancel();
-					}
-					
-				})*/;
- 
-				// create alert dialog
-				AlertDialog alertDialog = alertDialogBuilder.create();
- 
-				// show it
-				alertDialog.show();
+		
+		runOnUiThread(new Runnable(){ 
+			public void run(){
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+					context);
+	 
+				// set title
+				alertDialogBuilder.setTitle("Your session ID:");
+	 
+				// set dialog message
+				alertDialogBuilder
+					.setMessage(String.valueOf(sessionId))
+					.setCancelable(false)
+					.setPositiveButton("OK", null);
+	 
+					// create alert dialog
+					AlertDialog alertDialog = alertDialogBuilder.create();
+	 
+					// show it
+					alertDialog.show();
+			}
+		});
 			
 	}
 	
@@ -316,6 +331,7 @@ public class MainActivity extends Activity implements
 	    try
 	    {
 	      myClient.leaveSession(false, leaveSessionListener);
+	      showToast("left.");
 	    }
 	    catch( CollabrifyException e )
 	    {
