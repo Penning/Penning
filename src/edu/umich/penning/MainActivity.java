@@ -40,6 +40,8 @@ public class MainActivity extends Activity implements
 	public static Context context;
 	public static EditText et;
 	private CollabEditTextListener listener;
+	static boolean undo_redo_action = false;
+	static boolean prev_undoRedo_action = false;
 	
 	private static String TAG = "Penning";
 	
@@ -108,10 +110,12 @@ public class MainActivity extends Activity implements
         switch (item.getItemId()) {
             case R.id.undo_button:
             	Toast.makeText(this, "Undo Pressed" , Toast.LENGTH_SHORT).show();
+            	undo_redo_action = true;
             	listener.undo();
                 return true;
             case R.id.redo_button:
             	Toast.makeText(this, "Redo Pressed" , Toast.LENGTH_SHORT).show();
+            	undo_redo_action = true;
             	listener.redo();
                 return true;
             case R.id.create_session:
