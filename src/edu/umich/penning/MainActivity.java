@@ -1,18 +1,72 @@
 package edu.umich.penning;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+import edu.umich.imlc.collabrify.client.CollabrifyClient;
+import edu.umich.imlc.collabrify.client.CollabrifyListener.CollabrifyBroadcastListener;
+import edu.umich.imlc.collabrify.client.CollabrifyListener.CollabrifyCreateSessionListener;
+import edu.umich.imlc.collabrify.client.CollabrifyListener.CollabrifyJoinSessionListener;
+import edu.umich.imlc.collabrify.client.CollabrifyListener.CollabrifyLeaveSessionListener;
+import edu.umich.imlc.collabrify.client.CollabrifyListener.CollabrifyListSessionsListener;
+import edu.umich.imlc.collabrify.client.CollabrifyListener.CollabrifySessionListener;
+import edu.umich.imlc.collabrify.client.CollabrifyParticipant;
+import edu.umich.imlc.collabrify.client.CollabrifySession;
+import edu.umich.imlc.collabrify.client.exceptions.CollabrifyException;
+import edu.umich.imlc.collabrify.client.exceptions.CollabrifyUnrecoverableException;
+//import edu.umich.imlc.collabrify.collabrify_dummy_app.MainActivity;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements
+	CollabrifySessionListener, CollabrifyListSessionsListener,
+	CollabrifyBroadcastListener, CollabrifyCreateSessionListener,
+	CollabrifyJoinSessionListener, CollabrifyLeaveSessionListener
+{
 	public static Context context;
 	public static EditText et;
 	private CollabEditTextListener listener;
+	
+	private static String TAG = "Penning";
+	
+	private static final String GMAIL = "user email";
+	private static final String DISPLAY_NAME = "user display name";
+	private static final String ACCOUNT_GMAIL = "441winter2014@umich.edu";
+	private static final String ACCESS_TOKEN = "338692774BBE";
+	
+	private CollabrifyClient myClient;
+	private TextView broadcastedText;
+	private EditText broadcastText;
+	private Button connectButton;
+	private ArrayList<String> tags = new ArrayList<String>();
+	private long sessionId;
+	private String sessionName;
+	private String password = "password";
+	
+	// redundant but for the sake of readability
+	private CollabrifySessionListener sessionListener = this;
+	private CollabrifyListSessionsListener listSessionsListener = this;
+	private CollabrifyBroadcastListener broadcastListener = this;
+	private CollabrifyCreateSessionListener createSessionListener = this;
+	private CollabrifyJoinSessionListener joinSessionListener = this;
+	private CollabrifyLeaveSessionListener leaveSessionListener = this;
 
+	
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,11 +74,26 @@ public class MainActivity extends Activity {
         if (listener == null)
         	listener = new CollabEditTextListener(et);
         
+        // Instantiate client object
+        try{
+          myClient = CollabrifyClient.newClient(this, GMAIL, DISPLAY_NAME,
+              ACCOUNT_GMAIL, ACCESS_TOKEN, false);
+        }
+        catch( InterruptedException e ){
+          Log.e(TAG, "error", e);
+        }
+        catch( ExecutionException e ){
+          Log.e(TAG, "error", e);
+        }
+        
         setContentView(R.layout.activity_main);
         context = this;
         et = (EditText) findViewById(R.id.collabEditText1);
         et.addTextChangedListener(listener);
+        
+        tags.add("sample");
     }
+    
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -45,8 +114,228 @@ public class MainActivity extends Activity {
             	Toast.makeText(this, "Redo Pressed" , Toast.LENGTH_SHORT).show();
             	listener.redo();
                 return true;
+            case R.id.create_session:
+            	doCreateSession();
+            	return true;
+            case R.id.join_session:
+            	getSessionId();
+            	return true;
+            case R.id.leave_session:
+            	doLeaveSession();
+            	return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+	@Override
+	public void onError(CollabrifyException e) {
+		// print error
+		Log.e(TAG, "error: ", e);
+		
+		if(e instanceof CollabrifyUnrecoverableException)
+	    {
+	      //the client has been reset and we are no longer in a session
+	      onDisconnect();
+	    }
+	    Log.e(TAG, "error", e);
+	}
+
+	@Override
+	public void onDisconnect() {
+		System.out.println("Disconnected");
+	}
+
+	@Override
+	public void onSessionJoined(long maxOrderId, long baseFileSize) {
+		System.out.println("Session joined!");
+		showToast("Joined session " + sessionId);
+	}
+
+	@Override
+	public void onSessionCreated(CollabrifySession session) {
+		
+		sessionId = session.id();
+	    sessionName = session.name();
+		
+		System.out.println("Session created: " + session.id());
+		showSessionId();
+	}
+
+	@Override
+	public void onBroadcastDone(byte[] event, long orderId, long srid) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onReceiveSessionList(List<CollabrifySession> sessionList) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBaseFileReceived(File baseFile) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onBaseFileUploadComplete(long baseFileSize) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onFurtherJoinsPrevented() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onParticipantJoined(CollabrifyParticipant p) {
+		showToast("Now entering: " + p.getDisplayName());
+	}
+
+	@Override
+	public void onParticipantLeft(CollabrifyParticipant p) {
+		showToast(p.getDisplayName() + "has disconnected.");
+	}
+
+	@Override
+	public void onReceiveEvent(long orderId, int submissionRegistrationId,
+			String eventType, byte[] data, long elapsed) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSessionEnd(long id) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	private void showToast(final String text)
+	  {
+	    runOnUiThread(new Runnable()
+	    {
+
+	      @Override
+	      public void run()
+	      {
+	        Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+	      }
+	    });
+	  }
+	
+	public void doCreateSession()
+	  {
+		
+		if (myClient.inSession()){
+			showToast("Already in session " + sessionId);
+			return;
+		}
+	    try
+	    {
+	      Random rand = new Random();
+	      sessionName = "Test " + rand.nextInt(Integer.MAX_VALUE);
+	      
+	      myClient.createSession(sessionName, tags, password, 0,
+	          createSessionListener, sessionListener);
+	    }
+	    catch( CollabrifyException e )
+	    {
+	    	Log.w(TAG, "createSession() error");
+	    	onError(e);
+	    }
+	  }
+	
+	public void getSessionId(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Enter session ID:");
+
+		// Set up the input
+		final EditText input = new EditText(this);
+		// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+		input.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_VARIATION_NORMAL);
+		builder.setView(input);
+
+		// Set up the buttons
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+		        sessionId = Long.parseLong( input.getText().toString() );
+		    	System.out.println(sessionId);
+		    	doJoinSession();
+		    }
+		});
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+		        dialog.cancel();
+		    }
+		});
+
+		builder.show();
+	}
+	
+	public void showSessionId(){
+		
+		runOnUiThread(new Runnable(){ 
+			public void run(){
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+					context);
+	 
+				// set title
+				alertDialogBuilder.setTitle("Your session ID:");
+	 
+				// set dialog message
+				alertDialogBuilder
+					.setMessage(String.valueOf(sessionId))
+					.setCancelable(false)
+					.setPositiveButton("OK", null);
+	 
+					// create alert dialog
+					AlertDialog alertDialog = alertDialogBuilder.create();
+	 
+					// show it
+					alertDialog.show();
+			}
+		});
+			
+	}
+	
+	public void doJoinSession()
+	  {
+	    if( myClient.inSession() )
+	    {
+	      return;
+	    }
+	    try
+	    {
+	      //myClient.requestSessionList(tags, listSessionsListener);
+	    	myClient.joinSession(sessionId, password, (CollabrifyJoinSessionListener) createSessionListener, sessionListener);
+	    }
+	    catch( Exception e )
+	    {
+	      Log.e(TAG, "error", e);
+	    }
+	  }
+
+	  public void doLeaveSession()
+	  {
+	    if( !myClient.inSession() )
+	    {
+	      return;
+	    }
+	    try
+	    {
+	      myClient.leaveSession(false, leaveSessionListener);
+	      showToast("left.");
+	    }
+	    catch( CollabrifyException e )
+	    {
+	      onError(e);
+	    }
+	  }
 }

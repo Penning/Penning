@@ -5,6 +5,7 @@ import java.util.Stack;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
+import android.widget.Toast;
 
 /**
  * 
@@ -13,8 +14,8 @@ import android.widget.EditText;
  *
  */
 public class CollabEditTextListener implements TextWatcher {
-	protected Stack<Event> undoStack = new Stack<Event>();
-	protected Stack<Event> redoStack = new Stack<Event>();
+	public Stack<Event> undoStack = new Stack<Event>();
+	public Stack<Event> redoStack = new Stack<Event>();
 	protected String fullText;
 	private EditText owningContext;
 	
