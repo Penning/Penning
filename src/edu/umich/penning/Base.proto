@@ -1,0 +1,9 @@
+package penning;
+option java_package = "edu.umich.penning";
+option java_outer_classname = "BaseProtocol";
+
+message Base {
+	required string userID = 1;
+	required string sessionID = 2;
+	optional string document = 3;
+}

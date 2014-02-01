@@ -1,0 +1,22 @@
+package penning;
+option java_package = "edu.umich.penning";
+option java_outer_classname = "EventProtocol";
+
+message Event {
+
+	required string userID = 1;
+	required string sessionID = 2;
+
+	enum EventType {
+    	INSERT = 0;
+    	DELETE = 1;
+    	UNDO = 2;
+    	REDO = 3;
+    	CURSORLOCATIONCHANGED = 4;
+  	}
+
+  	required EventType type = 3;
+
+  	optional int32 cursorLocation = 4;
+  	optional string text = 5;
+}
