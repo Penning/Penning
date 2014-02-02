@@ -33,15 +33,16 @@ import edu.umich.imlc.collabrify.client.exceptions.CollabrifyUnrecoverableExcept
 //import edu.umich.imlc.collabrify.collabrify_dummy_app.MainActivity;
 
 public class MainActivity extends Activity implements
-	CollabrifySessionListener, CollabrifyListSessionsListener,
-	CollabrifyBroadcastListener, CollabrifyCreateSessionListener,
-	CollabrifyJoinSessionListener, CollabrifyLeaveSessionListener
-{
+		CollabrifySessionListener, CollabrifyListSessionsListener,
+		CollabrifyBroadcastListener, CollabrifyCreateSessionListener,
+		CollabrifyJoinSessionListener, CollabrifyLeaveSessionListener {
+	
 	public static Context context;
 	public static EditText et;
 	private CollabEditTextListener listener;
 	static boolean undo_redo_action = false;
-	static boolean prev_undoRedo_action = false;
+	static boolean prev_undo = false;
+	static boolean prev_redo = false;
 	
 	private static String TAG = "Penning";
 	
@@ -74,7 +75,7 @@ public class MainActivity extends Activity implements
         super.onCreate(savedInstanceState);
         
         if (listener == null)
-        	listener = new CollabEditTextListener(et);
+        	listener = new CollabEditTextListener();
         
         // Instantiate client object
         try{
