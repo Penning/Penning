@@ -50,7 +50,7 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void undo() {
 		if(undoStack.isEmpty()) {
-			System.out.println("UNDOSTACK IS EMPTY! AHHHHHHHHHH");
+			//System.out.println("UNDOSTACK IS EMPTY! AHHHHHHHHHH");
 			return;
 		}
 		
@@ -77,7 +77,7 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void redo() {
 		if(redoStack.isEmpty()) {
-			System.out.println("REDOSTACK IS EMPTY! AHHHHHHHHHH");
+			//System.out.println("REDOSTACK IS EMPTY! AHHHHHHHHHH");
 			return;
 		}
 		
