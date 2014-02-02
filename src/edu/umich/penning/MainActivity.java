@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -30,7 +32,7 @@ import edu.umich.imlc.collabrify.client.CollabrifyParticipant;
 import edu.umich.imlc.collabrify.client.CollabrifySession;
 import edu.umich.imlc.collabrify.client.exceptions.CollabrifyException;
 import edu.umich.imlc.collabrify.client.exceptions.CollabrifyUnrecoverableException;
-//import edu.umich.imlc.collabrify.collabrify_dummy_app.MainActivity;
+
 
 public class MainActivity extends Activity implements
 	CollabrifySessionListener, CollabrifyListSessionsListener,
@@ -74,7 +76,7 @@ public class MainActivity extends Activity implements
         super.onCreate(savedInstanceState);
         
         if (listener == null)
-        	listener = new CollabEditTextListener(et);
+        	listener = new CollabEditTextListener(this);
         
         // Instantiate client object
         try{
@@ -209,8 +211,57 @@ public class MainActivity extends Activity implements
 	@Override
 	public void onReceiveEvent(long orderId, int submissionRegistrationId,
 			String eventType, byte[] data, long elapsed) {
-		// TODO Auto-generated method stub
 		
+		try {
+			EventProtocol.Event recievedEvent = EventProtocol.Event.parseFrom(data);
+		} catch (InvalidProtocolBufferException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+	}
+	
+	public void BroadcastEvent(Event e)
+	{
+	  if(e == null)
+	    return;
+	  if( myClient != null && myClient.inSession() )
+	  {
+	    try
+	    {
+	      showToast("Sending Event...");
+	      EventProtocol.Event.Builder builtMessage = EventProtocol.Event.newBuilder();
+	      if(e.userID == null)
+	    	  builtMessage.setUserID("none");
+	      else
+	    	  builtMessage.setUserID(e.userID);
+	      
+	      if(e.sessionID == null)
+	    	  builtMessage.setSessionID("none");
+	      else
+	    	  builtMessage.setSessionID(e.sessionID);
+	      
+	      switch(e.event)
+	      {
+	      case insert: builtMessage.setType(EventProtocol.Event.EventType.INSERT); break;
+	      case delete: builtMessage.setType(EventProtocol.Event.EventType.DELETE); break;
+	      case undo: builtMessage.setType(EventProtocol.Event.EventType.UNDO); break;
+	      case redo: builtMessage.setType(EventProtocol.Event.EventType.REDO); break;
+	      case cursorLocationChanged: builtMessage.setType(EventProtocol.Event.EventType.CURSORLOCATIONCHANGED); break;
+	      default: //error
+	      }
+	      builtMessage.setCursorLocation(e.cursorLocation)
+	      	.setText(Character.toString(e.text));
+	     
+	      //TODO: resolve event types with second param
+	      myClient.broadcast(builtMessage.build().toByteArray(), e.event.toString(), broadcastListener);
+	    }
+	    catch( CollabrifyException err )
+	    {
+	    onError(err);
+	    }
+	  }
 	}
 
 	@Override
@@ -231,6 +282,7 @@ public class MainActivity extends Activity implements
 	      }
 	    });
 	  }
+	
 	
 	public void doCreateSession()
 	  {
@@ -268,6 +320,8 @@ public class MainActivity extends Activity implements
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
 		    @Override
 		    public void onClick(DialogInterface dialog, int which) {
+		    	if(input.length() == 0 || input == null) return;
+		    	
 		        sessionId = Long.parseLong( input.getText().toString() );
 		    	System.out.println(sessionId);
 		    	doJoinSession();

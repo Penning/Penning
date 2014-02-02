@@ -17,10 +17,10 @@ public class CollabEditTextListener implements TextWatcher {
 	public Stack<Event> undoStack = new Stack<Event>();
 	public Stack<Event> redoStack = new Stack<Event>();
 	protected String fullText;
-	private EditText owningContext;
+	private MainActivity myMainActivity;
 	
-	public CollabEditTextListener(EditText e){
-		owningContext = e;
+	public CollabEditTextListener(MainActivity _myMainActivity){
+		myMainActivity = _myMainActivity;
 	}
 	
 	public void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
@@ -50,7 +50,9 @@ public class CollabEditTextListener implements TextWatcher {
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
+		myMainActivity.BroadcastEvent(e);
 		undoStack.push(e);
+		
 	}
 	
 	public void removeChar(char c) {
@@ -58,6 +60,7 @@ public class CollabEditTextListener implements TextWatcher {
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char removed: " + c + " @ " + e.cursorLocation + 1);
+		myMainActivity.BroadcastEvent(e);
 		undoStack.push(e);
 	}
 	
@@ -127,4 +130,5 @@ public class CollabEditTextListener implements TextWatcher {
 			fullText = s.toString();
 		}
 	}
+
 }
