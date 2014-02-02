@@ -29,7 +29,7 @@ public class CollabEditTextListener implements TextWatcher {
 				redoStack.clear();
 			}
 			
-			if(lengthBefore < lengthAfter) {
+			if(lengthBefore < lengthAfter && MainActivity.et.getSelectionEnd() > 0) {
 				char c = text.toString().charAt(MainActivity.et.getSelectionEnd() - 1);
 //				Toast.makeText(MainActivity.context, "Char inserted: " + c + " @ " + owningContext.getSelectionEnd(), Toast.LENGTH_LONG).show();
 				insertChar(c);

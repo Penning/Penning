@@ -1,12 +1,14 @@
 package edu.umich.penning;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
-
-import com.google.protobuf.InvalidProtocolBufferException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,6 +23,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import edu.umich.imlc.collabrify.client.CollabrifyClient;
 import edu.umich.imlc.collabrify.client.CollabrifyListener.CollabrifyBroadcastListener;
 import edu.umich.imlc.collabrify.client.CollabrifyListener.CollabrifyCreateSessionListener;
@@ -60,6 +65,7 @@ public class MainActivity extends Activity implements
 	private long sessionId;
 	private String sessionName;
 	private String password = "password";
+	private int userId;
 	
 	// redundant but for the sake of readability
 	private CollabrifySessionListener sessionListener = this;
@@ -94,6 +100,9 @@ public class MainActivity extends Activity implements
         context = this;
         et = (EditText) findViewById(R.id.collabEditText1);
         et.addTextChangedListener(listener);
+        
+        // set random userID
+        userId = Double.valueOf(Math.random() * 1000.0).intValue();
         
         tags.add("sample");
     }
@@ -182,7 +191,35 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onBaseFileReceived(File baseFile) {
-		// TODO Auto-generated method stub
+		Log.v(TAG, "base file recieved");
+		
+		FileInputStream baseInput;
+		try {
+			baseInput = new FileInputStream(baseFile);
+			
+			byte[] data = new byte[(int)baseFile.length()];
+			baseInput.read(data, 0, (int)baseFile.length());
+			
+			final BaseProtocol.Base recievedBase = BaseProtocol.Base.parseFrom(data);
+			
+			// set text from base file
+			runOnUiThread(new Runnable() {
+			    public void run() {
+			    	et.setText(recievedBase.getDocument());
+			    }
+			});
+			
+			
+		} catch (FileNotFoundException e1) {
+			Log.e(TAG, "Base File not found.");
+			e1.printStackTrace();
+		} catch (InvalidProtocolBufferException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -291,18 +328,45 @@ public class MainActivity extends Activity implements
 			showToast("Already in session " + sessionId);
 			return;
 		}
+		
 	    try
 	    {
 	      Random rand = new Random();
 	      sessionName = "Test " + rand.nextInt(Integer.MAX_VALUE);
 	      
-	      myClient.createSession(sessionName, tags, password, 0,
-	          createSessionListener, sessionListener);
+	      // make base file
+	      File baseFile = new File(context.getFilesDir().getPath().toString() + "baseFile");
+	      
+	      // using base protocol
+	      BaseProtocol.Base.Builder builtMessage = BaseProtocol.Base.newBuilder();
+	      builtMessage.setUserID(String.valueOf(userId));
+	      builtMessage.setSessionID("none");
+	      builtMessage.setDocument(et.getText().toString());
+	      
+	      
+	      // write to file
+	      byte dataToWrite[] = builtMessage.build().toByteArray();
+	      FileOutputStream out = new FileOutputStream(baseFile);
+	      out.write(dataToWrite);
+	      out.close();
+	      
+	      // make input stream
+	      FileInputStream baseFileInputStream = new FileInputStream(baseFile);
+	      
+	      // create and send basefile
+	      myClient.createSessionWithBase(sessionName, tags, password, 
+	    		  0, baseFileInputStream, createSessionListener, sessionListener);
+	      
+	      //myClient.createSession(sessionName, tags, password, 0,
+	      //    createSessionListener, sessionListener);
 	    }
 	    catch( CollabrifyException e )
 	    {
-	    	Log.w(TAG, "createSession() error");
+	    	Log.w(TAG, "doCreateSession() error");
 	    	onError(e);
+	    }catch( Exception e){
+	    	Log.w(TAG, "doCreateSession() error");
+	    	e.printStackTrace();
 	    }
 	  }
 	
@@ -380,7 +444,7 @@ public class MainActivity extends Activity implements
 	    }
 	  }
 
-	  public void doLeaveSession()
+	public void doLeaveSession()
 	  {
 	    if( !myClient.inSession() )
 	    {
