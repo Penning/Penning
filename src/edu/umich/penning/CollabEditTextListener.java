@@ -47,6 +47,7 @@ public class CollabEditTextListener implements TextWatcher {
 	}
 	
 	public void onRemoteTextChange(Event e) {
+		foreignEventHandle = true;
 		if(e.event == EventType.insert)
 			insert(e.text, e.cursorLocation - 1);
 		else if(e.event == EventType.delete)
@@ -71,14 +72,23 @@ public class CollabEditTextListener implements TextWatcher {
 		return e;
 	}
 	
-	private void insert(char c, int cursorLocation) {
-		MainActivity.et.setText(MainActivity.et.getText().insert(cursorLocation, Character.toString(c)));
-		MainActivity.et.setSelection(cursorLocation + 1);
+	private void insert(final char c, final int cursorLocation) {
+		myMainActivity.runOnUiThread(new Runnable(){
+		    public void run(){
+		    	MainActivity.et.setText(MainActivity.et.getText().insert(cursorLocation, Character.toString(c)));
+				MainActivity.et.setSelection(cursorLocation + 1);
+		    	
+		    }
+		});
 	}
 	
-	private void remove(int cursorLocation) {
-		MainActivity.et.setText(MainActivity.et.getText().delete(cursorLocation, cursorLocation + 1));
-		MainActivity.et.setSelection(cursorLocation);
+	private void remove(final int cursorLocation) {
+		myMainActivity.runOnUiThread(new Runnable(){
+		    public void run(){
+				MainActivity.et.setText(MainActivity.et.getText().delete(cursorLocation - 1, cursorLocation));
+				MainActivity.et.setSelection(cursorLocation);
+		    }
+		});
 	}
 	
 	public void undo() {

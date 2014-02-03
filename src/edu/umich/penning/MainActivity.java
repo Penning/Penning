@@ -253,8 +253,6 @@ public class MainActivity extends Activity implements
 	@Override
 	public void onReceiveEvent(long orderId, int submissionRegistrationId,
 			String eventType, byte[] data, long elapsed) {
-		
-		
 		EventProtocol.Event recievedEvent = null;
 		try {
 			recievedEvent = EventProtocol.Event.parseFrom(data);
@@ -262,10 +260,11 @@ public class MainActivity extends Activity implements
 			e.printStackTrace();
 		}
 		
-		if(recievedEvent.getUserID() == userId) return;
-		Event e1 = new Event(recievedEvent);
+		System.out.println("Event UserID: " + recievedEvent.getUserID());
+		System.out.println("My UserID: " + userId);
+		if(recievedEvent.getUserID().equals(userId)) return;
 		
-
+		Event e1 = new Event(recievedEvent);
 		listener.onRemoteTextChange(e1);
 	}
 	
