@@ -40,15 +40,16 @@ import edu.umich.imlc.collabrify.client.exceptions.CollabrifyUnrecoverableExcept
 
 
 public class MainActivity extends Activity implements
-	CollabrifySessionListener, CollabrifyListSessionsListener,
-	CollabrifyBroadcastListener, CollabrifyCreateSessionListener,
-	CollabrifyJoinSessionListener, CollabrifyLeaveSessionListener
-{
+		CollabrifySessionListener, CollabrifyListSessionsListener,
+		CollabrifyBroadcastListener, CollabrifyCreateSessionListener,
+		CollabrifyJoinSessionListener, CollabrifyLeaveSessionListener {
+	
 	public static Context context;
 	public static EditText et;
 	private CollabEditTextListener listener;
 	static boolean undo_redo_action = false;
-	static boolean prev_undoRedo_action = false;
+	static boolean prev_undo = false;
+	static boolean prev_redo = false;
 	
 	private static String TAG = "Penning";
 	
@@ -65,7 +66,9 @@ public class MainActivity extends Activity implements
 	private long sessionId;
 	private String sessionName;
 	private String password = "password";
-	private int userId;
+
+	private String userId;
+
 	
 	// redundant but for the sake of readability
 	private CollabrifySessionListener sessionListener = this;
@@ -101,8 +104,10 @@ public class MainActivity extends Activity implements
         et = (EditText) findViewById(R.id.collabEditText1);
         et.addTextChangedListener(listener);
         
-        // set random userID
-        userId = Double.valueOf(Math.random() * 1000.0).intValue();
+
+        // random userID
+        userId = String.valueOf( Math.floor(Math.random() * 10000.0)  );
+
         
         tags.add("sample");
     }
@@ -270,12 +275,12 @@ public class MainActivity extends Activity implements
 	      showToast("Sending Event...");
 	      EventProtocol.Event.Builder builtMessage = EventProtocol.Event.newBuilder();
 	      if(e.userID == null)
-	    	  builtMessage.setUserID("none");
+	    	  builtMessage.setUserID(userId);
 	      else
 	    	  builtMessage.setUserID(e.userID);
 	      
 	      if(e.sessionID == null)
-	    	  builtMessage.setSessionID("none");
+	    	  builtMessage.setSessionID(String.valueOf(sessionId));
 	      else
 	    	  builtMessage.setSessionID(e.sessionID);
 	      
