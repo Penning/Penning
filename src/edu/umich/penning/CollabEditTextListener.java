@@ -86,7 +86,13 @@ public class CollabEditTextListener implements TextWatcher {
 			insert(e.text, e.cursorLocation);
 		
 		redoStack.add(e);
+		
+		if(e.event == EventType.insert)
+			e.event = EventType.delete;
+		else if(e.event == EventType.delete)
+			e.event = EventType.insert;
 		myMainActivity.BroadcastEvent(e);
+		
 		MainActivity.undo_redo_action = false;
 		MainActivity.prev_undo = true;
 	}

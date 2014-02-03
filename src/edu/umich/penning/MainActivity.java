@@ -217,7 +217,6 @@ public class MainActivity extends Activity implements
 		try {
 			EventProtocol.Event recievedEvent = EventProtocol.Event.parseFrom(data);
 		} catch (InvalidProtocolBufferException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -269,7 +268,6 @@ public class MainActivity extends Activity implements
 	@Override
 	public void onSessionEnd(long id) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	private void showToast(final String text)
