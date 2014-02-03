@@ -276,7 +276,7 @@ public class MainActivity extends Activity implements
 	  {
 	    try
 	    {
-	      showToast("Sending Event...");
+	      //showToast("Sending Event...");
 	      EventProtocol.Event.Builder builtMessage = EventProtocol.Event.newBuilder();
 	      if(e.userID == null)
 	    	  builtMessage.setUserID(userId);

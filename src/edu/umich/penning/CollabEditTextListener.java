@@ -75,9 +75,7 @@ public class CollabEditTextListener implements TextWatcher {
 	private void insert(final char c, final int cursorLocation) {
 		myMainActivity.runOnUiThread(new Runnable(){
 		    public void run(){
-		    	MainActivity.et.setText(MainActivity.et.getText().insert(cursorLocation, Character.toString(c)));
-				MainActivity.et.setSelection(cursorLocation + 1);
-		    	
+		    	MainActivity.et.setText(MainActivity.et.getText().insert(cursorLocation, Character.toString(c)));		    	
 		    }
 		});
 	}
