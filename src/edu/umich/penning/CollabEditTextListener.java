@@ -34,34 +34,41 @@ public class CollabEditTextListener implements TextWatcher {
 		if(text.length() > 0 && !MainActivity.undo_redo_action) {
 			if(lengthBefore < lengthAfter && MainActivity.et.getSelectionEnd() > 0) {
 				char c = text.toString().charAt(MainActivity.et.getSelectionEnd() - 1);
-				insertChar(c);
+				myMainActivity.BroadcastEvent(insertChar(c));
 				fullText = text.toString();
 			}
 			else if(lengthAfter < lengthBefore) {
 				char c = fullText.charAt(MainActivity.et.getSelectionEnd());
-				removeChar(c);
+				myMainActivity.BroadcastEvent(removeChar(c));
 				fullText = text.toString();
 			}
 			fullText = text.toString();
 		}
 	}
+	
+	public void onRemoteTextChange(Event e) {
+		if(e.event == EventType.insert)
+			insert(e.text, e.cursorLocation - 1);
+		else if(e.event == EventType.delete)
+			remove(e.cursorLocation);
+	}
 
-	public void insertChar(char c) {
+	public Event insertChar(char c) {
 		Event e = new Event(EventType.insert);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
 		undoStack.add(e);
-		myMainActivity.BroadcastEvent(e);
+		return e;
 	}
 	
-	public void removeChar(char c) {
+	public Event removeChar(char c) {
 		Event e = new Event(EventType.delete);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char removed: " + c + " @ " + e.cursorLocation + 1);
 		undoStack.add(e);
-		myMainActivity.BroadcastEvent(e);
+		return e;
 	}
 	
 	private void insert(char c, int cursorLocation) {
@@ -87,6 +94,13 @@ public class CollabEditTextListener implements TextWatcher {
 			insert(e.text, e.cursorLocation);
 		
 		redoStack.add(e);
+		
+		if(e.event == EventType.insert)
+			e.event = EventType.delete;
+		else if(e.event == EventType.delete)
+			e.event = EventType.insert;
+		myMainActivity.BroadcastEvent(e);
+		
 		MainActivity.undo_redo_action = false;
 		MainActivity.prev_undo = true;
 	}
@@ -104,6 +118,7 @@ public class CollabEditTextListener implements TextWatcher {
 			remove(e.cursorLocation);
 	
 		undoStack.add(e);
+		myMainActivity.BroadcastEvent(e);
 		MainActivity.undo_redo_action = false;
 		MainActivity.prev_redo = true;
 	}
