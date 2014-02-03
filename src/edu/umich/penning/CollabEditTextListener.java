@@ -1,11 +1,9 @@
 package edu.umich.penning;
 
-import java.util.Stack;
+import java.util.Vector;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.widget.EditText;
-import android.widget.Toast;
 
 /**
  * 
@@ -14,9 +12,10 @@ import android.widget.Toast;
  *
  */
 public class CollabEditTextListener implements TextWatcher {
-	public Stack<Event> undoStack = new Stack<Event>();
-	public Stack<Event> redoStack = new Stack<Event>();
+	public Vector<Event> undoStack = new Vector<Event>();
+	public Vector<Event> redoStack = new Vector<Event>();
 	protected String fullText;
+	
 	private MainActivity myMainActivity;
 	
 	public CollabEditTextListener(MainActivity _myMainActivity){
@@ -25,19 +24,13 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
 		if(text.length() > 0 && !MainActivity.undo_redo_action) {
-			if(MainActivity.prev_undoRedo_action) {
-				redoStack.clear();
-			}
-			
 			if(lengthBefore < lengthAfter) {
 				char c = text.toString().charAt(MainActivity.et.getSelectionEnd() - 1);
-//				Toast.makeText(MainActivity.context, "Char inserted: " + c + " @ " + owningContext.getSelectionEnd(), Toast.LENGTH_LONG).show();
 				insertChar(c);
 				fullText = text.toString();
 			}
 			else if(lengthAfter < lengthBefore) {
 				char c = fullText.charAt(MainActivity.et.getSelectionEnd());
-//				Toast.makeText(MainActivity.context, "Char removed: " + c + " @ " + owningContext.getSelectionEnd(), Toast.LENGTH_LONG).show();
 				removeChar(c);
 				fullText = text.toString();
 			}
@@ -50,9 +43,8 @@ public class CollabEditTextListener implements TextWatcher {
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
+		undoStack.add(e);
 		myMainActivity.BroadcastEvent(e);
-		undoStack.push(e);
-		
 	}
 	
 	public void removeChar(char c) {
@@ -60,18 +52,19 @@ public class CollabEditTextListener implements TextWatcher {
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char removed: " + c + " @ " + e.cursorLocation + 1);
+		undoStack.add(e);
 		myMainActivity.BroadcastEvent(e);
-		undoStack.push(e);
 	}
 	
 	public void undo() {
-		if(undoStack.empty()) {
+		if(undoStack.isEmpty()) {
 			//System.out.println("UNDOSTACK IS EMPTY! AHHHHHHHHHH");
 			return;
 		}
 		
 		//get last event from undoStack
-		Event e = undoStack.pop();
+		Event e = undoStack.lastElement();
+		undoStack.removeElement(e);
 		
 		if(e.event == EventType.insert) {
 			//re-insert last char
@@ -85,19 +78,20 @@ public class CollabEditTextListener implements TextWatcher {
 			System.out.println("Char inserted: " + e.text + " @ " + e.cursorLocation);
 		}
 		
-		redoStack.push(e);
+		redoStack.add(e);
 		MainActivity.undo_redo_action = false;
-		MainActivity.prev_undoRedo_action = true;
+		MainActivity.prev_undo = true;
 	}
 	
 	public void redo() {
-		if(redoStack.empty()) {
+		if(redoStack.isEmpty()) {
 			//System.out.println("REDOSTACK IS EMPTY! AHHHHHHHHHH");
 			return;
 		}
 		
 		//get last event from redoStack
-		Event e = redoStack.pop();
+		Event e = redoStack.lastElement();
+		redoStack.removeElement(e);
 		
 		if(e.event == EventType.insert) {
 			//re-insert last char
@@ -112,9 +106,9 @@ public class CollabEditTextListener implements TextWatcher {
 			System.out.println("Char removed: " + e.text + " @ " + e.cursorLocation);
 		}
 	
-		undoStack.push(e);
+		undoStack.add(e);
 		MainActivity.undo_redo_action = false;
-		MainActivity.prev_undoRedo_action = true;
+		MainActivity.prev_redo = true;
 	}
 
 	@Override
@@ -128,6 +122,31 @@ public class CollabEditTextListener implements TextWatcher {
 		if(before > after && !MainActivity.undo_redo_action) { 
 			System.out.println("GOING TO DELETE CHARACTER @ " + Integer.toString(MainActivity.et.getSelectionEnd()) + " FROM \"" + s + "\"");
 			fullText = s.toString();
+		}
+		
+		if(s.length() > 0 && !MainActivity.undo_redo_action) {
+			if(MainActivity.prev_undo || MainActivity.prev_redo) {
+				redoStack.removeAllElements();
+				MainActivity.prev_undo = false;
+				MainActivity.prev_redo = false;
+				
+				if(before < before) {
+					for(int i = 0; i < undoStack.size(); ++i) {
+						if(undoStack.elementAt(i).cursorLocation > MainActivity.et.getSelectionEnd())
+							undoStack.elementAt(i).cursorLocation += 1;
+						if(redoStack.elementAt(i).cursorLocation > MainActivity.et.getSelectionEnd())
+							redoStack.elementAt(i).cursorLocation += 1;
+					}
+				}
+				else if(before < before) {
+					for(int i = 0; i < undoStack.size(); ++i) {
+						if(undoStack.elementAt(i).cursorLocation > MainActivity.et.getSelectionEnd() - 1)
+							undoStack.elementAt(i).cursorLocation -= 1;
+						if(redoStack.elementAt(i).cursorLocation > MainActivity.et.getSelectionEnd() - 1)
+							redoStack.elementAt(i).cursorLocation -= 1;
+					}
+				}
+			}
 		}
 	}
 

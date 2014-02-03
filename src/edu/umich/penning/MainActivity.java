@@ -36,15 +36,16 @@ import edu.umich.imlc.collabrify.client.exceptions.CollabrifyUnrecoverableExcept
 
 
 public class MainActivity extends Activity implements
-	CollabrifySessionListener, CollabrifyListSessionsListener,
-	CollabrifyBroadcastListener, CollabrifyCreateSessionListener,
-	CollabrifyJoinSessionListener, CollabrifyLeaveSessionListener
-{
+		CollabrifySessionListener, CollabrifyListSessionsListener,
+		CollabrifyBroadcastListener, CollabrifyCreateSessionListener,
+		CollabrifyJoinSessionListener, CollabrifyLeaveSessionListener {
+	
 	public static Context context;
 	public static EditText et;
 	private CollabEditTextListener listener;
 	static boolean undo_redo_action = false;
-	static boolean prev_undoRedo_action = false;
+	static boolean prev_undo = false;
+	static boolean prev_redo = false;
 	
 	private static String TAG = "Penning";
 	
