@@ -449,7 +449,11 @@ public class MainActivity extends Activity implements
 	    catch( Exception e )
 	    {
 	      Log.e(TAG, "error", e);
-	      showToast("Invalid session ID");
+	      
+	    }
+	    
+	    if (!myClient.inSession()){
+	    	showToast("Invalid session ID");
 	    }
 	  }
 
