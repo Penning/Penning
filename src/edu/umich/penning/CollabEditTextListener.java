@@ -24,93 +24,89 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
 		if(text.length() > 0 && !MainActivity.undo_redo_action) {
-			if(lengthBefore < lengthAfter && MainActivity.et.getSelectionEnd() > 0) {
+			if(lengthBefore < lengthAfter) {
 				char c = text.toString().charAt(MainActivity.et.getSelectionEnd() - 1);
-				myMainActivity.BroadcastEvent(insertChar(c));
+				insertChar(c);
 				fullText = text.toString();
 			}
 			else if(lengthAfter < lengthBefore) {
 				char c = fullText.charAt(MainActivity.et.getSelectionEnd());
-				myMainActivity.BroadcastEvent(removeChar(c));
+				removeChar(c);
 				fullText = text.toString();
 			}
 			fullText = text.toString();
 		}
 	}
-	
-	public void onRemoteTextChange(Event e) {
-		if(e.event == EventType.insert)
-			insert(e.text, e.cursorLocation - 1);
-		else if(e.event == EventType.delete)
-			remove(e.cursorLocation);
-	}
 
-	public Event insertChar(char c) {
+	public void insertChar(char c) {
 		Event e = new Event(EventType.insert);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
 		undoStack.add(e);
-		return e;
+		myMainActivity.BroadcastEvent(e);
 	}
 	
-	public Event removeChar(char c) {
+	public void removeChar(char c) {
 		Event e = new Event(EventType.delete);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char removed: " + c + " @ " + e.cursorLocation + 1);
 		undoStack.add(e);
-		return e;
-	}
-	
-	private void insert(char c, int cursorLocation) {
-		MainActivity.et.setText(MainActivity.et.getText().insert(cursorLocation, Character.toString(c)));
-		MainActivity.et.setSelection(cursorLocation + 1);
-	}
-	
-	private void remove(int cursorLocation) {
-		MainActivity.et.setText(MainActivity.et.getText().delete(cursorLocation, cursorLocation + 1));
-		MainActivity.et.setSelection(cursorLocation);
+		myMainActivity.BroadcastEvent(e);
 	}
 	
 	public void undo() {
-		if(undoStack.isEmpty()) return;
+		if(undoStack.isEmpty()) {
+			//System.out.println("UNDOSTACK IS EMPTY! AHHHHHHHHHH");
+			return;
+		}
 		
 		//get last event from undoStack
 		Event e = undoStack.lastElement();
 		undoStack.removeElement(e);
 		
-		if(e.event == EventType.insert)
-			remove(e.cursorLocation - 1);
-		else if(e.event == EventType.delete)
-			insert(e.text, e.cursorLocation);
+		if(e.event == EventType.insert) {
+			//re-insert last char
+			MainActivity.et.setText(MainActivity.et.getText().delete(e.cursorLocation - 1, e.cursorLocation));
+			MainActivity.et.setSelection(e.cursorLocation - 1);
+		}
+		else if(e.event == EventType.delete) {
+			//remove last inserted char
+			MainActivity.et.setText(MainActivity.et.getText().insert(e.cursorLocation, Character.toString(e.text)));
+			MainActivity.et.setSelection(e.cursorLocation + 1);
+			System.out.println("Char inserted: " + e.text + " @ " + e.cursorLocation);
+		}
 		
 		redoStack.add(e);
-		
-		if(e.event == EventType.insert)
-			e.event = EventType.delete;
-		else if(e.event == EventType.delete)
-			e.event = EventType.insert;
-		myMainActivity.BroadcastEvent(e);
-		
 		MainActivity.undo_redo_action = false;
 		MainActivity.prev_undo = true;
 	}
 	
 	public void redo() {
-		if(redoStack.isEmpty()) return;
+		if(redoStack.isEmpty()) {
+			//System.out.println("REDOSTACK IS EMPTY! AHHHHHHHHHH");
+			return;
+		}
 		
 		//get last event from redoStack
 		Event e = redoStack.lastElement();
 		redoStack.removeElement(e);
 		
-		if(e.event == EventType.insert)
-			insert(e.text, e.cursorLocation - 1);
-		else if(e.event == EventType.delete)
-			remove(e.cursorLocation);
+		if(e.event == EventType.insert) {
+			//re-insert last char
+			MainActivity.et.setText(MainActivity.et.getText().insert(e.cursorLocation - 1, Character.toString(e.text)));
+			MainActivity.et.setSelection(e.cursorLocation);
+			System.out.println("Char inserted: " + e.text + " @ " + e.cursorLocation);
+		}
+		else if(e.event == EventType.delete) {
+			//remove last char
+			MainActivity.et.setText(MainActivity.et.getText().delete(e.cursorLocation, e.cursorLocation + 1));
+			MainActivity.et.setSelection(e.cursorLocation);
+			System.out.println("Char removed: " + e.text + " @ " + e.cursorLocation);
+		}
 	
 		undoStack.add(e);
-		myMainActivity.BroadcastEvent(e);
 		MainActivity.undo_redo_action = false;
 		MainActivity.prev_redo = true;
 	}
@@ -122,6 +118,7 @@ public class CollabEditTextListener implements TextWatcher {
 
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int before, int after) {
+		// TODO Auto-generated method stub
 		if(before > after && !MainActivity.undo_redo_action) { 
 			System.out.println("GOING TO DELETE CHARACTER @ " + Integer.toString(MainActivity.et.getSelectionEnd()) + " FROM \"" + s + "\"");
 			fullText = s.toString();
