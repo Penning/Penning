@@ -24,7 +24,13 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
 		if(text.length() > 0 && !MainActivity.undo_redo_action) {
-			if(lengthBefore < lengthAfter) {
+			
+			if(MainActivity.undo_redo_action) {
+				redoStack.clear();
+			}
+			
+			if(lengthBefore < lengthAfter && MainActivity.et.getSelectionEnd() > 0) {
+
 				char c = text.toString().charAt(MainActivity.et.getSelectionEnd() - 1);
 				insertChar(c);
 				fullText = text.toString();
