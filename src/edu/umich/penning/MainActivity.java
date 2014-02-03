@@ -254,12 +254,54 @@ public class MainActivity extends Activity implements
 	public void onReceiveEvent(long orderId, int submissionRegistrationId,
 			String eventType, byte[] data, long elapsed) {
 		
+		EventProtocol.Event recievedEvent = null;
 		try {
-			EventProtocol.Event recievedEvent = EventProtocol.Event.parseFrom(data);
+			recievedEvent = EventProtocol.Event.parseFrom(data);
 		} catch (InvalidProtocolBufferException e) {
 			e.printStackTrace();
 		}
-
+		
+		Event e1;
+		//e1.
+		
+		
+		switch (recievedEvent.getType()){
+		case INSERT:					// insert
+			
+			final int startin = Math.max(recievedEvent.getCursorLocation()-1, 0);
+			final int endin = Math.max(recievedEvent.getCursorLocation()-1, 0);
+			final EventProtocol.Event finalEvent = recievedEvent;
+			MainActivity.this.runOnUiThread(new Runnable(){
+			    public void run(){
+			    	
+			    	et.getText().replace(Math.min(startin, endin), Math.max(startin, endin),
+					        finalEvent.getText(), 0, finalEvent.getText().length());
+			    	
+			    }
+			});
+			
+			break;
+		case DELETE: 					// delete
+			
+			final int startdel = Math.max(recievedEvent.getCursorLocation()-1, 0);
+			final int enddel = Math.max(recievedEvent.getCursorLocation()-1, 0);
+			final EventProtocol.Event finalEventdel = recievedEvent;
+			MainActivity.this.runOnUiThread(new Runnable(){
+			    public void run(){
+			    	//et.getText().replace(Math.min(startdel, enddel), Math.max(startdel, enddel),
+					//        finalEventdel.getText(), 0, finalEventdel.getText().length());
+			    	et.setText(et.getText().delete(finalEventdel.getCursorLocation(), 
+			    			finalEventdel.getCursorLocation()+1));
+			    	et.setSelection(finalEventdel.getCursorLocation());
+			    }
+			});
+			
+			break;
+		case CURSORLOCATIONCHANGED:		// cursor
+			break;
+		default:
+			break;
+		}
 		
 	}
 	
