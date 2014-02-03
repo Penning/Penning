@@ -275,6 +275,7 @@ public class MainActivity extends Activity implements
 			MainActivity.this.runOnUiThread(new Runnable(){
 			    public void run(){
 			    	
+			    	listener.foreignEventHandle = true;
 			    	et.getText().replace(Math.min(startin, endin), Math.max(startin, endin),
 					        finalEvent.getText(), 0, finalEvent.getText().length());
 			    	
@@ -289,6 +290,7 @@ public class MainActivity extends Activity implements
 			final EventProtocol.Event finalEventdel = recievedEvent;
 			MainActivity.this.runOnUiThread(new Runnable(){
 			    public void run(){
+			    	listener.foreignEventHandle = true;
 			    	//et.getText().replace(Math.min(startdel, enddel), Math.max(startdel, enddel),
 					//        finalEventdel.getText(), 0, finalEventdel.getText().length());
 			    	et.setText(et.getText().delete(finalEventdel.getCursorLocation(), 
