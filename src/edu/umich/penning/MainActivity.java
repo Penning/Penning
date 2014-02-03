@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -21,6 +19,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import edu.umich.imlc.collabrify.client.CollabrifyClient;
 import edu.umich.imlc.collabrify.client.CollabrifyListener.CollabrifyBroadcastListener;
 import edu.umich.imlc.collabrify.client.CollabrifyListener.CollabrifyCreateSessionListener;
