@@ -261,42 +261,42 @@ public class MainActivity extends Activity implements
 			e.printStackTrace();
 		}
 		
-		Event e1;
-		//e1.
-		
+		Event e1 = new Event(recievedEvent);
 		
 		switch (recievedEvent.getType()){
 		case INSERT:					// insert
 			
-			final int startin = Math.max(recievedEvent.getCursorLocation()-1, 0);
-			final int endin = Math.max(recievedEvent.getCursorLocation()-1, 0);
-			final EventProtocol.Event finalEvent = recievedEvent;
-			MainActivity.this.runOnUiThread(new Runnable(){
-			    public void run(){
-			    	
-			    	listener.foreignEventHandle = true;
-			    	et.getText().replace(Math.min(startin, endin), Math.max(startin, endin),
-					        finalEvent.getText(), 0, finalEvent.getText().length());
-			    	
-			    }
-			});
+//			final int startin = Math.max(recievedEvent.getCursorLocation()-1, 0);
+//			final int endin = Math.max(recievedEvent.getCursorLocation()-1, 0);
+//			final EventProtocol.Event finalEvent = recievedEvent;
+//			MainActivity.this.runOnUiThread(new Runnable(){
+//			    public void run(){
+//			    	
+//			    	listener.foreignEventHandle = true;
+//			    	et.getText().replace(Math.min(startin, endin), Math.max(startin, endin),
+//					        finalEvent.getText(), 0, finalEvent.getText().length());
+//			    	
+//			    }
+//			});
+			listener.onRemoteTextChange(e1);
 			
 			break;
 		case DELETE: 					// delete
 			
-			final int startdel = Math.max(recievedEvent.getCursorLocation()-1, 0);
-			final int enddel = Math.max(recievedEvent.getCursorLocation()-1, 0);
-			final EventProtocol.Event finalEventdel = recievedEvent;
-			MainActivity.this.runOnUiThread(new Runnable(){
-			    public void run(){
-			    	listener.foreignEventHandle = true;
-			    	//et.getText().replace(Math.min(startdel, enddel), Math.max(startdel, enddel),
-					//        finalEventdel.getText(), 0, finalEventdel.getText().length());
-			    	et.setText(et.getText().delete(finalEventdel.getCursorLocation(), 
-			    			finalEventdel.getCursorLocation()+1));
-			    	et.setSelection(finalEventdel.getCursorLocation());
-			    }
-			});
+//			final int startdel = Math.max(recievedEvent.getCursorLocation()-1, 0);
+//			final int enddel = Math.max(recievedEvent.getCursorLocation()-1, 0);
+//			final EventProtocol.Event finalEventdel = recievedEvent;
+//			MainActivity.this.runOnUiThread(new Runnable(){
+//			    public void run(){
+//			    	listener.foreignEventHandle = true;
+//			    	//et.getText().replace(Math.min(startdel, enddel), Math.max(startdel, enddel),
+//					//        finalEventdel.getText(), 0, finalEventdel.getText().length());
+//			    	et.setText(et.getText().delete(finalEventdel.getCursorLocation(), 
+//			    			finalEventdel.getCursorLocation()+1));
+//			    	et.setSelection(finalEventdel.getCursorLocation());
+//			    }
+//			});
+			listener.onRemoteTextChange(e1);
 			
 			break;
 		case CURSORLOCATIONCHANGED:		// cursor
