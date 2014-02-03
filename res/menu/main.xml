@@ -21,18 +21,18 @@
         android:id="@+id/join_session" 
         android:titleCondensed="join" 
         android:title="@string/join_session"
-        android:showAsAction="never" />
+        android:showAsAction="always" />
     
     <item 
         android:id="@+id/create_session" 
         android:titleCondensed="create" 
         android:title="@string/create_session"
-        android:showAsAction="never" />
+        android:showAsAction="always" />
         
     <item 
         android:id="@+id/leave_session" 
         android:titleCondensed="leave" 
         android:title="@string/leave_session"
-        android:showAsAction="never" />
+        android:showAsAction="always" />
     
     </menu>

@@ -16,6 +16,12 @@ public class CollabEditTextListener implements TextWatcher {
 	public Vector<Event> redoStack = new Vector<Event>();
 	protected String fullText;
 	
+	private MainActivity myMainActivity;
+	
+	public CollabEditTextListener(MainActivity _myMainActivity){
+		myMainActivity = _myMainActivity;
+	}
+	
 	public void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
 		if(text.length() > 0 && !MainActivity.undo_redo_action) {
 			if(lengthBefore < lengthAfter) {
@@ -38,6 +44,7 @@ public class CollabEditTextListener implements TextWatcher {
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
 		undoStack.add(e);
+		myMainActivity.BroadcastEvent(e);
 	}
 	
 	public void removeChar(char c) {
@@ -46,6 +53,7 @@ public class CollabEditTextListener implements TextWatcher {
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		System.out.println("Char removed: " + c + " @ " + e.cursorLocation + 1);
 		undoStack.add(e);
+		myMainActivity.BroadcastEvent(e);
 	}
 	
 	public void undo() {
@@ -141,4 +149,5 @@ public class CollabEditTextListener implements TextWatcher {
 			}
 		}
 	}
+
 }
