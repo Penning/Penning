@@ -61,6 +61,7 @@ public class MainActivity extends Activity implements
 	private long sessionId;
 	private String sessionName;
 	private String password = "password";
+	private String userId;
 	
 	// redundant but for the sake of readability
 	private CollabrifySessionListener sessionListener = this;
@@ -95,6 +96,9 @@ public class MainActivity extends Activity implements
         context = this;
         et = (EditText) findViewById(R.id.collabEditText1);
         et.addTextChangedListener(listener);
+        
+        // random userID
+        userId = String.valueOf( Math.floor(Math.random() * 10000.0)  );
         
         tags.add("sample");
     }
@@ -234,12 +238,12 @@ public class MainActivity extends Activity implements
 	      showToast("Sending Event...");
 	      EventProtocol.Event.Builder builtMessage = EventProtocol.Event.newBuilder();
 	      if(e.userID == null)
-	    	  builtMessage.setUserID("none");
+	    	  builtMessage.setUserID(userId);
 	      else
 	    	  builtMessage.setUserID(e.userID);
 	      
 	      if(e.sessionID == null)
-	    	  builtMessage.setSessionID("none");
+	    	  builtMessage.setSessionID(String.valueOf(sessionId));
 	      else
 	    	  builtMessage.setSessionID(e.sessionID);
 	      
