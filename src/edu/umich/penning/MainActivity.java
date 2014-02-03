@@ -254,6 +254,7 @@ public class MainActivity extends Activity implements
 	public void onReceiveEvent(long orderId, int submissionRegistrationId,
 			String eventType, byte[] data, long elapsed) {
 		
+		
 		EventProtocol.Event recievedEvent = null;
 		try {
 			recievedEvent = EventProtocol.Event.parseFrom(data);
@@ -261,9 +262,8 @@ public class MainActivity extends Activity implements
 			e.printStackTrace();
 		}
 		
-		Event e1;
-		//e1.
 		
+		if(recievedEvent.getUserID() == userId) return;
 		
 		switch (recievedEvent.getType()){
 		case INSERT:					// insert
