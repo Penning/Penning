@@ -32,14 +32,15 @@ public class CollabEditTextListener implements TextWatcher {
 			
 		}
 		if(text.length() > 0 && !MainActivity.undo_redo_action) {
+			Event e;
 			if(lengthBefore < lengthAfter && MainActivity.et.getSelectionEnd() > 0) {
 				char c = text.toString().charAt(MainActivity.et.getSelectionEnd() - 1);
-				myMainActivity.BroadcastEvent(insertChar(c));
+				insertChar(c);
 				fullText = text.toString();
 			}
 			else if(lengthAfter < lengthBefore) {
 				char c = fullText.charAt(MainActivity.et.getSelectionEnd());
-				myMainActivity.BroadcastEvent(removeChar(c));
+				removeChar(c);
 				fullText = text.toString();
 			}
 			fullText = text.toString();
@@ -54,28 +55,33 @@ public class CollabEditTextListener implements TextWatcher {
 			remove(e.cursorLocation);
 	}
 
-	public Event insertChar(char c) {
+	private void insertChar(char c) {
 		Event e = new Event(EventType.insert);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
+		myMainActivity.BroadcastEvent(e);
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
+		e.event = EventType.delete;
+		e.cursorLocation -= 1;
 		undoStack.add(e);
-		return e;
 	}
 	
-	public Event removeChar(char c) {
+	private void removeChar(char c) {
 		Event e = new Event(EventType.delete);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
-		System.out.println("Char removed: " + c + " @ " + e.cursorLocation + 1);
+		myMainActivity.BroadcastEvent(e);
+		System.out.println("Char removed: " + c + " @ " + (e.cursorLocation + 1));
+		e.event = EventType.insert;
 		undoStack.add(e);
-		return e;
 	}
 	
 	private void insert(final char c, final int cursorLocation) {
 		myMainActivity.runOnUiThread(new Runnable(){
 		    public void run(){
-		    	MainActivity.et.setText(MainActivity.et.getText().insert(cursorLocation, Character.toString(c)));		    	
+		    	System.out.println("Insert " + c + "@" + cursorLocation);
+		    	MainActivity.et.setText(MainActivity.et.getText().insert(cursorLocation, Character.toString(c)));	
+				MainActivity.et.setSelection(cursorLocation + 1);
 		    }
 		});
 	}
@@ -83,10 +89,28 @@ public class CollabEditTextListener implements TextWatcher {
 	private void remove(final int cursorLocation) {
 		myMainActivity.runOnUiThread(new Runnable(){
 		    public void run(){
-				MainActivity.et.setText(MainActivity.et.getText().delete(cursorLocation - 1, cursorLocation));
+		    	System.out.println("Remove @" + cursorLocation);
+				MainActivity.et.setText(MainActivity.et.getText().delete(cursorLocation, cursorLocation + 1));
 				MainActivity.et.setSelection(cursorLocation);
 		    }
 		});
+	}
+	
+	private Event performUndoRedo(Event e) {
+		if(e.event == EventType.insert)
+			insert(e.text, e.cursorLocation);
+		else if(e.event == EventType.delete)
+			remove(e.cursorLocation);
+
+		if(e.event == EventType.insert)
+			e.event = EventType.delete;
+		else if(e.event == EventType.delete)
+			e.event = EventType.insert;
+		
+		myMainActivity.BroadcastEvent(e);
+		MainActivity.undo_redo_action = false;
+		MainActivity.prev_undo = true;
+		return e;
 	}
 	
 	public void undo() {
@@ -96,21 +120,8 @@ public class CollabEditTextListener implements TextWatcher {
 		Event e = undoStack.lastElement();
 		undoStack.removeElement(e);
 		
-		if(e.event == EventType.insert)
-			remove(e.cursorLocation - 1);
-		else if(e.event == EventType.delete)
-			insert(e.text, e.cursorLocation);
-		
-		redoStack.add(e);
-		
-		if(e.event == EventType.insert)
-			e.event = EventType.delete;
-		else if(e.event == EventType.delete)
-			e.event = EventType.insert;
-		myMainActivity.BroadcastEvent(e);
-		
-		MainActivity.undo_redo_action = false;
-		MainActivity.prev_undo = true;
+		e = performUndoRedo(e);
+		redoStack.add(e);	
 	}
 	
 	public void redo() {
@@ -120,15 +131,8 @@ public class CollabEditTextListener implements TextWatcher {
 		Event e = redoStack.lastElement();
 		redoStack.removeElement(e);
 		
-		if(e.event == EventType.insert)
-			insert(e.text, e.cursorLocation - 1);
-		else if(e.event == EventType.delete)
-			remove(e.cursorLocation);
-	
+		e = performUndoRedo(e);
 		undoStack.add(e);
-		myMainActivity.BroadcastEvent(e);
-		MainActivity.undo_redo_action = false;
-		MainActivity.prev_redo = true;
 	}
 
 	@Override
@@ -138,10 +142,7 @@ public class CollabEditTextListener implements TextWatcher {
 
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int before, int after) {
-		if(before > after && !MainActivity.undo_redo_action) { 
-			System.out.println("GOING TO DELETE CHARACTER @ " + Integer.toString(MainActivity.et.getSelectionEnd()) + " FROM \"" + s + "\"");
-			fullText = s.toString();
-		}
+		if(before > after) fullText = s.toString();
 		
 		if(s.length() > 0 && !MainActivity.undo_redo_action) {
 			if(MainActivity.prev_undo || MainActivity.prev_redo) {
