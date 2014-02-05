@@ -37,8 +37,7 @@ public class CollabEditTextListener implements TextWatcher {
 			return;
 			
 		}
-		if(text.length() > 0 && !MainActivity.undo_redo_action) {
-			Event e = null;
+		if(text.length() > 0 && !MainActivity.undo_redo_action && !unwinding) {
 			if(lengthBefore < lengthAfter && MainActivity.et.getSelectionEnd() > 0) {
 				char c = text.toString().charAt(MainActivity.et.getSelectionEnd() - 1);
 				insertChar(c);
@@ -124,8 +123,14 @@ public class CollabEditTextListener implements TextWatcher {
 			unwinding = false;
 			return;
 		}
+		
+		//Need to offset cursors
+		int offset = 0;
+		if(lastConfirmed != null) 
+			offset = lastConfirmed.cursorLocation - e.cursorLocation;
 
 		foreignEventHandle = true;
+		e.cursorLocation += offset;
 		if(e.event == EventType.insert)
 			insert(e.text, e.cursorLocation - 1);
 		else if(e.event == EventType.delete)
