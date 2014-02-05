@@ -67,12 +67,7 @@ public class CollabEditTextListener implements TextWatcher {
 			undo();
 			num_undos++;
 		}
-		for (int i=0; i<num_undos; ++i){
-			System.out.println("collision- redo'ing");
-			collisionFlag = true;
-			myMainActivity.localOrderId++;
-			redo();
-		}
+		
 		
 		collisionFlag = false;
 		foreignEventHandle = true;
@@ -81,6 +76,14 @@ public class CollabEditTextListener implements TextWatcher {
 			insert(e.text, e.cursorLocation - 1);
 		else if(e.event == EventType.delete)
 			remove(e.cursorLocation);
+		
+		
+		for (int i=0; i<num_undos; ++i){
+			System.out.println("collision- redo'ing");
+			collisionFlag = true;
+			myMainActivity.localOrderId++;
+			redo();
+		}
 	}
 
 	private void insertChar(char c) {
