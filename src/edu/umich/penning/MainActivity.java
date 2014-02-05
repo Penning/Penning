@@ -265,7 +265,7 @@ public class MainActivity extends Activity implements
 //		if(recievedEvent.getUserID().equals(userId)) return;
 		
 		Event e1 = new Event(recievedEvent, orderId);
-		e1.userID = userId;
+		
 		listener.onRemoteTextChange(e1);
 	}
 	
@@ -287,6 +287,7 @@ public class MainActivity extends Activity implements
 	      else
 	    	  builtMessage.setUserID(e.userID);
 	      
+	      System.out.println("userid: " + userId);
 	      builtMessage.setUserID(userId);
 	      
 	      if(e.sessionID == null)
