@@ -19,7 +19,7 @@ public class CollabEditTextListener implements TextWatcher {
 	protected String fullText;
 	
 	public boolean foreignEventHandle = false;
-	private boolean collisionFlag = false;
+	public boolean collisionFlag = false;
 	
 	
 	private MainActivity myMainActivity;
@@ -29,11 +29,13 @@ public class CollabEditTextListener implements TextWatcher {
 	}
 	
 	public void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
-		if(foreignEventHandle || collisionFlag)
+		if(foreignEventHandle)
 		{
 			foreignEventHandle = false;
 			return;
 		}
+		if (collisionFlag)
+			return;
 		
 		myMainActivity.localOrderId++;
 		

@@ -275,6 +275,9 @@ public class MainActivity extends Activity implements
 	
 	public void BroadcastEvent(Event e)
 	{
+		if (listener.collisionFlag)
+			return;
+		
 		System.out.println("Broadcasting!");
 	  if(e == null)
 	    return;
