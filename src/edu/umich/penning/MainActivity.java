@@ -106,7 +106,7 @@ public class MainActivity extends Activity implements
         
 
         // random userID
-        userId = String.valueOf( Math.floor(Math.random() * 10000.0)  );
+        userId = String.valueOf( String.valueOf( Double.valueOf(Math.random() * 1000000.0).intValue() ) );
 
         
         tags.add("sample");
