@@ -57,7 +57,7 @@ public class CollabEditTextListener implements TextWatcher {
 		
 		System.out.println("e.orderId: " + e.orderId + " | localOrderId: " + myMainActivity.localOrderId);
 		int num_undos = 0;
-		while (e.orderId <= myMainActivity.localOrderId){
+		while (e.orderId < myMainActivity.localOrderId){
 			foreignEventHandle = true;
 			myMainActivity.localOrderId--;
 			undo();
