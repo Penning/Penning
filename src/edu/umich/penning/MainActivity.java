@@ -125,12 +125,12 @@ public class MainActivity extends Activity implements
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.undo_button:
-            	Toast.makeText(this, "Undo Pressed" , Toast.LENGTH_SHORT).show();
+//            	Toast.makeText(this, "Undo Pressed" , Toast.LENGTH_SHORT).show();
             	undo_redo_action = true;
             	listener.undo();
                 return true;
             case R.id.redo_button:
-            	Toast.makeText(this, "Redo Pressed" , Toast.LENGTH_SHORT).show();
+//            	Toast.makeText(this, "Redo Pressed" , Toast.LENGTH_SHORT).show();
             	undo_redo_action = true;
             	listener.redo();
                 return true;
@@ -247,7 +247,7 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onParticipantLeft(CollabrifyParticipant p) {
-		showToast(p.getDisplayName() + "has disconnected.");
+		showToast("Another user has left the session");
 	}
 
 	@Override
