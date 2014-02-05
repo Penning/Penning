@@ -51,6 +51,8 @@ public class MainActivity extends Activity implements
 	static boolean prev_undo = false;
 	static boolean prev_redo = false;
 	
+	public long localOrderId;
+	
 	private static String TAG = "Penning";
 	
 	private static final String GMAIL = "user email";
@@ -265,7 +267,10 @@ public class MainActivity extends Activity implements
 		if(recievedEvent.getUserID().equals(userId)) return;
 		
 		Event e1 = new Event(recievedEvent);
+		e1.orderId = orderId;
 		listener.onRemoteTextChange(e1);
+		
+		
 	}
 	
 	public void BroadcastEvent(Event e)
@@ -449,11 +454,9 @@ public class MainActivity extends Activity implements
 	    catch( Exception e )
 	    {
 	      Log.e(TAG, "error", e);
-		    
-//		    if (!myClient.inSession()){
-		    	showToast("Invalid session ID");
-//		    }
-	      
+
+		  showToast("Invalid session ID");
+
 	    }
 	  }
 

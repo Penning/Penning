@@ -9,6 +9,8 @@ public class Event {
 	public int cursorLocation;
 	public char text;
 	
+	public long orderId;
+	
 	Event(EventType e) {
 		event = e;
 	}

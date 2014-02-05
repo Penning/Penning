@@ -1,6 +1,7 @@
 package edu.umich.penning;
 
 import java.util.Vector;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,9 +15,11 @@ import android.text.TextWatcher;
 public class CollabEditTextListener implements TextWatcher {
 	public Vector<Event> undoStack = new Vector<Event>();
 	public Vector<Event> redoStack = new Vector<Event>();
+	public ConcurrentLinkedQueue<Event> localQueue = new ConcurrentLinkedQueue<Event>();
 	protected String fullText;
 	
 	public boolean foreignEventHandle = false;
+	
 	
 	private MainActivity myMainActivity;
 	
@@ -29,10 +32,11 @@ public class CollabEditTextListener implements TextWatcher {
 		{
 			foreignEventHandle = false;
 			return;
-			
 		}
+		
+		myMainActivity.localOrderId++;
+		
 		if(text.length() > 0 && !MainActivity.undo_redo_action) {
-			Event e;
 			if(lengthBefore < lengthAfter && MainActivity.et.getSelectionEnd() > 0) {
 				char c = text.toString().charAt(MainActivity.et.getSelectionEnd() - 1);
 				insertChar(c);
@@ -45,10 +49,25 @@ public class CollabEditTextListener implements TextWatcher {
 			}
 			fullText = text.toString();
 		}
+		
+		
 	}
 	
 	public void onRemoteTextChange(Event e) {
 		foreignEventHandle = true;
+		
+		int num_undos = 0;
+		while (e.orderId <= myMainActivity.localOrderId){
+			foreignEventHandle = true;
+			myMainActivity.localOrderId--;
+			undo();
+			num_undos++;
+		}
+		for (int i=0; i<num_undos; ++i){
+			foreignEventHandle = true;
+			redo();
+		}
+		
 		if(e.event == EventType.insert)
 			insert(e.text, e.cursorLocation - 1);
 		else if(e.event == EventType.delete)
@@ -64,6 +83,7 @@ public class CollabEditTextListener implements TextWatcher {
 		e.event = EventType.delete;
 		e.cursorLocation -= 1;
 		undoStack.add(e);
+		localQueue.add(e);
 	}
 	
 	private void removeChar(char c) {
@@ -74,6 +94,7 @@ public class CollabEditTextListener implements TextWatcher {
 		System.out.println("Char removed: " + c + " @ " + (e.cursorLocation + 1));
 		e.event = EventType.insert;
 		undoStack.add(e);
+		localQueue.add(e);
 	}
 	
 	private void insert(final char c, final int cursorLocation) {
@@ -143,6 +164,7 @@ public class CollabEditTextListener implements TextWatcher {
 
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int before, int after) {
+
 		if(before > after) fullText = s.toString();
 		
 		if(s.length() > 0 && !MainActivity.undo_redo_action) {
@@ -170,5 +192,6 @@ public class CollabEditTextListener implements TextWatcher {
 			}
 		}
 	}
+	
 
 }
