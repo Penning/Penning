@@ -127,14 +127,8 @@ public class CollabEditTextListener implements TextWatcher {
 		}
 		
 		//Need to offset cursors
-<<<<<<< HEAD
 		if(lastConfirmed != null)
 			e.cursorLocation = lastCursorLocation + 1;
-=======
-		int offset = 0;
-		if(lastConfirmed != null) 
-			e.cursorLocation = lastConfirmed.cursorLocation;
->>>>>>> parent of 5facfdd... WAIT FOR IT
 
 		foreignEventHandle = true;
 //		e.cursorLocation += offset;
