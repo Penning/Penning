@@ -68,6 +68,7 @@ public class CollabEditTextListener implements TextWatcher {
 		System.out.println("SIZE: " + localEvents.size());
 		System.out.println("lastConfirmed: " + lastConfirmed.text);
 		System.out.println("Last localEvents: " + localEvents.lastElement().text);
+		
 		while(localEvents.lastElement().eventId != lastConfirmed.eventId) {
 			Event e = localEvents.lastElement();
 			local.add(e);
@@ -81,7 +82,6 @@ public class CollabEditTextListener implements TextWatcher {
 			unwind(e);
 		}
 		System.out.println("GOING TO REAPPLY");
-//		return;
 		reapply(local, remote);
 	}
 	
@@ -89,7 +89,7 @@ public class CollabEditTextListener implements TextWatcher {
 		Event e = null;
 		int cursor_offset = 0;
 		while(!remote.isEmpty()) {
-			e = remote.firstElement();
+			e = remote.lastElement();
 			if(e.event == EventType.insert)
 				remove(e.cursorLocation);
 			else if(e.event == EventType.delete)
@@ -98,7 +98,7 @@ public class CollabEditTextListener implements TextWatcher {
 			cursor_offset++;
 		}
 		while(local.size() > 1) {
-			e = local.lastElement();
+			e = local.firstElement();
 			e.cursorLocation += cursor_offset;
 			System.out.print("REAPPLYING: " + e.text);
 			if(e.event == EventType.insert)
