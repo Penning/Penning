@@ -19,6 +19,7 @@ public class CollabEditTextListener implements TextWatcher {
 	protected String fullText;
 	
 	public boolean foreignEventHandle = false;
+	private boolean collisionFlag = false;
 	
 	
 	private MainActivity myMainActivity;
@@ -28,7 +29,7 @@ public class CollabEditTextListener implements TextWatcher {
 	}
 	
 	public void onTextChanged (CharSequence text, int start, int lengthBefore, int lengthAfter) {
-		if(foreignEventHandle)
+		if(foreignEventHandle || collisionFlag)
 		{
 			foreignEventHandle = false;
 			return;
@@ -59,18 +60,19 @@ public class CollabEditTextListener implements TextWatcher {
 		while (e.orderId < myMainActivity.localOrderId){
 			System.out.println("e.orderId: " + e.orderId + " | localOrderId: " + myMainActivity.localOrderId);
 			System.out.println("collision- undo'ing");
-			foreignEventHandle = true;
+			collisionFlag = true;
 			myMainActivity.localOrderId--;
 			undo();
 			num_undos++;
 		}
 		for (int i=0; i<num_undos; ++i){
 			System.out.println("collision- redo'ing");
-			foreignEventHandle = true;
+			collisionFlag = true;
 			myMainActivity.localOrderId++;
 			redo();
 		}
 		
+		collisionFlag = false;
 		foreignEventHandle = true;
 		
 		if(e.event == EventType.insert)
@@ -128,7 +130,7 @@ public class CollabEditTextListener implements TextWatcher {
 		else if(e.event == EventType.delete)
 			remove(e.cursorLocation);
 		
-		if (!foreignEventHandle)
+		if (collisionFlag)
 			myMainActivity.BroadcastEvent(e);
 
 		if(e.event == EventType.insert)
