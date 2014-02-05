@@ -20,6 +20,7 @@ public class CollabEditTextListener implements TextWatcher {
 	private Vector<Event> serverEvents = new Vector<Event>();
 	
 	public Event lastConfirmed = null;
+	private int lastCursorLocation = 0;
 	
 	public boolean foreignEventHandle = false;
 	private boolean unwinding = false;
@@ -121,13 +122,13 @@ public class CollabEditTextListener implements TextWatcher {
 			lastConfirmed = e;
 			unwind();
 			unwinding = false;
+			lastCursorLocation = e.cursorLocation;
 			return;
 		}
 		
 		//Need to offset cursors
-//		int offset = 0;
 		if(lastConfirmed != null)
-			e.cursorLocation = lastConfirmed.cursorLocation + 1;
+			e.cursorLocation = lastCursorLocation + 1;
 
 		foreignEventHandle = true;
 //		e.cursorLocation += offset;
@@ -135,6 +136,7 @@ public class CollabEditTextListener implements TextWatcher {
 			insert(e.text, e.cursorLocation - 1);
 		else if(e.event == EventType.delete)
 			remove(e.cursorLocation);
+		lastCursorLocation = e.cursorLocation;
 		serverEvents.add(e);
 	}
 
