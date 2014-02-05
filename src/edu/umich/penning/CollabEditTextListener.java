@@ -74,18 +74,20 @@ public class CollabEditTextListener implements TextWatcher {
 			localEvents.remove(e);
 			unwind(e);
 		}
-		if(localEvents.lastElement().text == lastConfirmed.text) {
-			Event e = localEvents.lastElement();
-			local.add(e);
-			localEvents.remove(e);
-			unwind(e);
-		}
+//		if(localEvents.lastElement().text == lastConfirmed.text) {
+//			Event e = localEvents.lastElement();
+//			local.add(e);
+//			localEvents.remove(e);
+//			unwind(e);
+//		}
 		while(!serverEvents.isEmpty() && serverEvents.firstElement().globalOrder < lastConfirmed.globalOrder) {
 			Event e = serverEvents.firstElement();
 			remote.add(e);
 			serverEvents.remove(0);
 			unwind(e);
 		}
+		System.out.println("GOING TO REAPPLY");
+//		return;
 		reapply(local, remote);
 	}
 	
@@ -101,6 +103,7 @@ public class CollabEditTextListener implements TextWatcher {
 		}
 		while(!local.isEmpty()) {
 			e = local.lastElement();
+			System.out.print("REAPPLYING: " + e.text);
 			if(e.event == EventType.insert)
 				remove(e.cursorLocation);
 			else if(e.event == EventType.delete)
