@@ -101,16 +101,6 @@ public class CollabEditTextListener implements TextWatcher {
 			insert(e.text, e.cursorLocation);
 		else if(e.event == EventType.delete)
 			remove(e.cursorLocation);
-		
-		myMainActivity.BroadcastEvent(e);
-
-		if(e.event == EventType.insert)
-			e.event = EventType.delete;
-		else if(e.event == EventType.delete)
-			e.event = EventType.insert;
-		
-		MainActivity.undo_redo_action = false;
-		MainActivity.prev_undo = true;
 		return e;
 	}
 	
@@ -122,6 +112,15 @@ public class CollabEditTextListener implements TextWatcher {
 		undoStack.removeElement(e);
 		
 		e = performUndoRedo(e);
+		myMainActivity.BroadcastEvent(e);
+
+		if(e.event == EventType.insert)
+			e.event = EventType.delete;
+		else if(e.event == EventType.delete)
+			e.event = EventType.insert;
+		
+		MainActivity.undo_redo_action = false;
+		MainActivity.prev_undo = true;
 		redoStack.add(e);	
 	}
 	
@@ -133,6 +132,17 @@ public class CollabEditTextListener implements TextWatcher {
 		redoStack.removeElement(e);
 		
 		e = performUndoRedo(e);
+		e.cursorLocation++;
+		myMainActivity.BroadcastEvent(e);
+		e.cursorLocation--;
+
+		if(e.event == EventType.insert)
+			e.event = EventType.delete;
+		else if(e.event == EventType.delete)
+			e.event = EventType.insert;
+		
+		MainActivity.undo_redo_action = false;
+		MainActivity.prev_undo = true;
 		undoStack.add(e);
 	}
 
