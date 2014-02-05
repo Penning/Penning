@@ -6,6 +6,7 @@ message Event {
 
 	required string userID = 1;
 	required string sessionID = 2;
+	required int32 eventId = 3;
 
 	enum EventType {
     	INSERT = 0;
@@ -15,8 +16,8 @@ message Event {
     	CURSORLOCATIONCHANGED = 4;
   	}
 
-  	required EventType type = 3;
+  	required EventType type = 4;
 
-  	optional int32 cursorLocation = 4;
-  	optional string text = 5;
+  	optional int32 cursorLocation = 5;
+  	optional string text = 6;
 }
