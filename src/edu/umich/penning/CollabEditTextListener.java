@@ -64,8 +64,11 @@ public class CollabEditTextListener implements TextWatcher {
 		Vector<Event> local = new Vector<Event>();
 		Vector<Event> remote = new Vector<Event>();
 		
+		if (localEvents == null || localEvents.isEmpty())
+			return;
+		
 		Event e = null;
-		while(localEvents.lastElement().text != lastConfirmed.text && !localEvents.isEmpty()) {
+		while(!localEvents.isEmpty() && localEvents.lastElement().text != lastConfirmed.text) {
 			e = localEvents.lastElement();
 			local.add(e);
 			localEvents.remove(e);
@@ -109,7 +112,7 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void onRemoteTextChange(Event e) {
 		if(e.userID == MainActivity.userId) {
-			System.out.println("same userID");
+			System.out.println("same userID: " + e.userID + " " + MainActivity.userId);
 			lastConfirmed = e;
 			unwind();
 			return;
