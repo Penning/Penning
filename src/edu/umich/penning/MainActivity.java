@@ -253,7 +253,6 @@ public class MainActivity extends Activity implements
 	@Override
 	public void onReceiveEvent(long orderId, int submissionRegistrationId,
 			String eventType, byte[] data, long elapsed) {
-		
 		EventProtocol.Event recievedEvent = null;
 		try {
 			recievedEvent = EventProtocol.Event.parseFrom(data);
@@ -261,50 +260,12 @@ public class MainActivity extends Activity implements
 			e.printStackTrace();
 		}
 		
+		System.out.println("Event UserID: " + recievedEvent.getUserID());
+		System.out.println("My UserID: " + userId);
+		if(recievedEvent.getUserID().equals(userId)) return;
+		
 		Event e1 = new Event(recievedEvent);
-		
-		switch (recievedEvent.getType()){
-		case INSERT:					// insert
-			
-//			final int startin = Math.max(recievedEvent.getCursorLocation()-1, 0);
-//			final int endin = Math.max(recievedEvent.getCursorLocation()-1, 0);
-//			final EventProtocol.Event finalEvent = recievedEvent;
-//			MainActivity.this.runOnUiThread(new Runnable(){
-//			    public void run(){
-//			    	
-//			    	listener.foreignEventHandle = true;
-//			    	et.getText().replace(Math.min(startin, endin), Math.max(startin, endin),
-//					        finalEvent.getText(), 0, finalEvent.getText().length());
-//			    	
-//			    }
-//			});
-			listener.onRemoteTextChange(e1);
-			
-			break;
-		case DELETE: 					// delete
-			
-//			final int startdel = Math.max(recievedEvent.getCursorLocation()-1, 0);
-//			final int enddel = Math.max(recievedEvent.getCursorLocation()-1, 0);
-//			final EventProtocol.Event finalEventdel = recievedEvent;
-//			MainActivity.this.runOnUiThread(new Runnable(){
-//			    public void run(){
-//			    	listener.foreignEventHandle = true;
-//			    	//et.getText().replace(Math.min(startdel, enddel), Math.max(startdel, enddel),
-//					//        finalEventdel.getText(), 0, finalEventdel.getText().length());
-//			    	et.setText(et.getText().delete(finalEventdel.getCursorLocation(), 
-//			    			finalEventdel.getCursorLocation()+1));
-//			    	et.setSelection(finalEventdel.getCursorLocation());
-//			    }
-//			});
-			listener.onRemoteTextChange(e1);
-			
-			break;
-		case CURSORLOCATIONCHANGED:		// cursor
-			break;
-		default:
-			break;
-		}
-		
+		listener.onRemoteTextChange(e1);
 	}
 	
 	public void BroadcastEvent(Event e)
@@ -315,7 +276,7 @@ public class MainActivity extends Activity implements
 	  {
 	    try
 	    {
-	      showToast("Sending Event...");
+	      //showToast("Sending Event...");
 	      EventProtocol.Event.Builder builtMessage = EventProtocol.Event.newBuilder();
 	      if(e.userID == null)
 	    	  builtMessage.setUserID(userId);
@@ -488,6 +449,11 @@ public class MainActivity extends Activity implements
 	    catch( Exception e )
 	    {
 	      Log.e(TAG, "error", e);
+		    
+//		    if (!myClient.inSession()){
+		    	showToast("Invalid session ID");
+//		    }
+	      
 	    }
 	  }
 
