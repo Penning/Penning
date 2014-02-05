@@ -74,6 +74,7 @@ public class CollabEditTextListener implements TextWatcher {
 			localEvents.remove(e);
 			unwind(e);
 		}
+//		unwind(localEvents.lastElement());
 //		if(localEvents.lastElement().text == lastConfirmed.text) {
 //			Event e = localEvents.lastElement();
 //			local.add(e);
@@ -83,7 +84,7 @@ public class CollabEditTextListener implements TextWatcher {
 		while(!serverEvents.isEmpty() && serverEvents.firstElement().globalOrder < lastConfirmed.globalOrder) {
 			Event e = serverEvents.firstElement();
 			remote.add(e);
-			serverEvents.remove(0);
+			serverEvents.remove(e);
 			unwind(e);
 		}
 		System.out.println("GOING TO REAPPLY");
@@ -99,7 +100,7 @@ public class CollabEditTextListener implements TextWatcher {
 				insert(e.text, e.cursorLocation);
 			else if(e.event == EventType.delete)
 				remove(e.cursorLocation);
-			remote.remove(0);
+			remote.remove(e);
 		}
 		while(!local.isEmpty()) {
 			e = local.lastElement();
@@ -114,7 +115,10 @@ public class CollabEditTextListener implements TextWatcher {
 	}
 	
 	public void onRemoteTextChange(Event e) {
-		if(e.userID == MainActivity.userId) {
+		if(e.event == EventType.insert) System.out.println("RETURNED EVENT IS AN INSERT");
+		else if(e.event == EventType.delete) System.out.println("RETURNED EVENT IS A DELETE");
+		System.out.println("userID: " + e.userID + " " + MainActivity.userId);
+		if(e.userID.equals(MainActivity.userId)) {
 			System.out.println("same userID: " + e.userID + " " + MainActivity.userId);
 			lastConfirmed = e;
 			unwind();
@@ -134,11 +138,11 @@ public class CollabEditTextListener implements TextWatcher {
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		myMainActivity.BroadcastEvent(e);
-		localEvents.add(e);
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
 		e.event = EventType.delete;
 		e.cursorLocation -= 1;
 		undoStack.add(e);
+		localEvents.add(e);
 	}
 	
 	private void removeChar(char c) {
@@ -146,10 +150,10 @@ public class CollabEditTextListener implements TextWatcher {
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		myMainActivity.BroadcastEvent(e);
-		localEvents.add(e);
 		System.out.println("Char removed: " + c + " @ " + (e.cursorLocation + 1));
 		e.event = EventType.insert;
 		undoStack.add(e);
+		localEvents.add(e);
 	}
 	
 	private void insert(final char c, final int cursorLocation) {
