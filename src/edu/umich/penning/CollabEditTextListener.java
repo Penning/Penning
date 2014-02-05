@@ -152,7 +152,7 @@ public class CollabEditTextListener implements TextWatcher {
 				MainActivity.prev_redo = false;
 				
 				if(before < after) {
-					for(int i = 0; i < undoStack.size(); ++i) {
+					for(int i = 0; i < undoStack.size() && i < redoStack.size(); ++i) {
 						if(undoStack.elementAt(i).cursorLocation > MainActivity.et.getSelectionEnd())
 							undoStack.elementAt(i).cursorLocation += 1;
 						if(redoStack.elementAt(i).cursorLocation > MainActivity.et.getSelectionEnd())
@@ -160,7 +160,7 @@ public class CollabEditTextListener implements TextWatcher {
 					}
 				}
 				else if(before < after) {
-					for(int i = 0; i < undoStack.size(); ++i) {
+					for(int i = 0; i < undoStack.size() && i < redoStack.size(); ++i) {
 						if(undoStack.elementAt(i).cursorLocation > MainActivity.et.getSelectionEnd() - 1)
 							undoStack.elementAt(i).cursorLocation -= 1;
 						if(redoStack.elementAt(i).cursorLocation > MainActivity.et.getSelectionEnd() - 1)
