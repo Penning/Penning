@@ -87,7 +87,7 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	private void reapply(Vector<Event> local, Vector<Event> remote) {
 		Event e = null;
-		int cursor_offset = 0;
+		int cursor_offset = 1;
 		while(!remote.isEmpty()) {
 			e = remote.lastElement();
 			if(e.event == EventType.insert)
@@ -125,12 +125,9 @@ public class CollabEditTextListener implements TextWatcher {
 		}
 		
 		//Need to offset cursors
-		int offset = 0;
-		if(lastConfirmed != null) {
-			if(e.event == EventType.insert)
-				e.cursorLocation = lastConfirmed.cursorLocation + 1;
-			else e.cursorLocation = lastConfirmed.cursorLocation;
-		}
+//		int offset = 0;
+		if(lastConfirmed != null)
+			e.cursorLocation = lastConfirmed.cursorLocation + 1;
 
 		foreignEventHandle = true;
 //		e.cursorLocation += offset;
