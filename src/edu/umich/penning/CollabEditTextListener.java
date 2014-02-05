@@ -66,22 +66,23 @@ public class CollabEditTextListener implements TextWatcher {
 		
 		if (localEvents == null || localEvents.isEmpty())
 			return;
-		
-		Event e = null;
-		while(!localEvents.isEmpty() && localEvents.lastElement().text != lastConfirmed.text) {
-			e = localEvents.lastElement();
+		System.out.println("SIZE: " + localEvents.size());
+		System.out.println("lastConfirmed: " + lastConfirmed.text);
+		System.out.println("Last localEvents: " + localEvents.lastElement().text);
+		while(localEvents.lastElement().text != lastConfirmed.text) {
+			Event e = localEvents.lastElement();
 			local.add(e);
 			localEvents.remove(e);
 			unwind(e);
 		}
 		if(localEvents.lastElement().text == lastConfirmed.text) {
-			e = localEvents.lastElement();
+			Event e = localEvents.lastElement();
 			local.add(e);
 			localEvents.remove(e);
 			unwind(e);
 		}
 		while(serverEvents.firstElement().globalOrder < lastConfirmed.globalOrder) {
-			e = serverEvents.firstElement();
+			Event e = serverEvents.firstElement();
 			remote.add(e);
 			serverEvents.remove(0);
 			unwind(e);
@@ -130,7 +131,6 @@ public class CollabEditTextListener implements TextWatcher {
 		Event e = new Event(EventType.insert);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
-		localEvents.add(e);
 		myMainActivity.BroadcastEvent(e);
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
 		e.event = EventType.delete;
@@ -142,7 +142,6 @@ public class CollabEditTextListener implements TextWatcher {
 		Event e = new Event(EventType.delete);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
-		localEvents.add(e);
 		myMainActivity.BroadcastEvent(e);
 		System.out.println("Char removed: " + c + " @ " + (e.cursorLocation + 1));
 		e.event = EventType.insert;
