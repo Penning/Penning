@@ -109,6 +109,7 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void onRemoteTextChange(Event e) {
 		if(e.userID == MainActivity.userId) {
+			System.out.println("same userID");
 			lastConfirmed = e;
 			unwind();
 			return;
