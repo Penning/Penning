@@ -1,6 +1,10 @@
 package edu.umich.penning;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -62,7 +66,9 @@ public class MainActivity extends Activity implements
 	private long sessionId;
 	private String sessionName;
 	private String password = "password";
+
 	private String userId;
+
 	
 	// redundant but for the sake of readability
 	private CollabrifySessionListener sessionListener = this;
@@ -98,8 +104,10 @@ public class MainActivity extends Activity implements
         et = (EditText) findViewById(R.id.collabEditText1);
         et.addTextChangedListener(listener);
         
+
         // random userID
         userId = String.valueOf( Math.floor(Math.random() * 10000.0)  );
+
         
         tags.add("sample");
     }
@@ -188,7 +196,35 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onBaseFileReceived(File baseFile) {
-		// TODO Auto-generated method stub
+		Log.v(TAG, "base file recieved");
+		
+		FileInputStream baseInput;
+		try {
+			baseInput = new FileInputStream(baseFile);
+			
+			byte[] data = new byte[(int)baseFile.length()];
+			baseInput.read(data, 0, (int)baseFile.length());
+			
+			final BaseProtocol.Base recievedBase = BaseProtocol.Base.parseFrom(data);
+			
+			// set text from base file
+			runOnUiThread(new Runnable() {
+			    public void run() {
+			    	et.setText(recievedBase.getDocument());
+			    }
+			});
+			
+			
+		} catch (FileNotFoundException e1) {
+			Log.e(TAG, "Base File not found.");
+			e1.printStackTrace();
+		} catch (InvalidProtocolBufferException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	}
 
@@ -217,57 +253,19 @@ public class MainActivity extends Activity implements
 	@Override
 	public void onReceiveEvent(long orderId, int submissionRegistrationId,
 			String eventType, byte[] data, long elapsed) {
-		
 		EventProtocol.Event recievedEvent = null;
 		try {
 			recievedEvent = EventProtocol.Event.parseFrom(data);
 		} catch (InvalidProtocolBufferException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		Event e1;
-		//e1.
+		System.out.println("Event UserID: " + recievedEvent.getUserID());
+		System.out.println("My UserID: " + userId);
+		if(recievedEvent.getUserID().equals(userId)) return;
 		
-		
-		switch (recievedEvent.getType()){
-		case INSERT:					// insert
-			
-			final int startin = Math.max(recievedEvent.getCursorLocation()-1, 0);
-			final int endin = Math.max(recievedEvent.getCursorLocation()-1, 0);
-			final EventProtocol.Event finalEvent = recievedEvent;
-			MainActivity.this.runOnUiThread(new Runnable(){
-			    public void run(){
-			    	
-			    	et.getText().replace(Math.min(startin, endin), Math.max(startin, endin),
-					        finalEvent.getText(), 0, finalEvent.getText().length());
-			    	
-			    }
-			});
-			
-			break;
-		case DELETE: 					// delete
-			
-			final int startdel = Math.max(recievedEvent.getCursorLocation()-1, 0);
-			final int enddel = Math.max(recievedEvent.getCursorLocation()-1, 0);
-			final EventProtocol.Event finalEventdel = recievedEvent;
-			MainActivity.this.runOnUiThread(new Runnable(){
-			    public void run(){
-			    	//et.getText().replace(Math.min(startdel, enddel), Math.max(startdel, enddel),
-					//        finalEventdel.getText(), 0, finalEventdel.getText().length());
-			    	et.setText(et.getText().delete(finalEventdel.getCursorLocation(), 
-			    			finalEventdel.getCursorLocation()+1));
-			    	et.setSelection(finalEventdel.getCursorLocation());
-			    }
-			});
-			
-			break;
-		case CURSORLOCATIONCHANGED:		// cursor
-			break;
-		default:
-			break;
-		}
-		
+		Event e1 = new Event(recievedEvent);
+		listener.onRemoteTextChange(e1);
 	}
 	
 	public void BroadcastEvent(Event e)
@@ -278,7 +276,7 @@ public class MainActivity extends Activity implements
 	  {
 	    try
 	    {
-	      showToast("Sending Event...");
+	      //showToast("Sending Event...");
 	      EventProtocol.Event.Builder builtMessage = EventProtocol.Event.newBuilder();
 	      if(e.userID == null)
 	    	  builtMessage.setUserID(userId);
@@ -315,7 +313,6 @@ public class MainActivity extends Activity implements
 	@Override
 	public void onSessionEnd(long id) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	private void showToast(final String text)
@@ -339,18 +336,45 @@ public class MainActivity extends Activity implements
 			showToast("Already in session " + sessionId);
 			return;
 		}
+		
 	    try
 	    {
 	      Random rand = new Random();
 	      sessionName = "Test " + rand.nextInt(Integer.MAX_VALUE);
 	      
-	      myClient.createSession(sessionName, tags, password, 0,
-	          createSessionListener, sessionListener);
+	      // make base file
+	      File baseFile = new File(context.getFilesDir().getPath().toString() + "baseFile");
+	      
+	      // using base protocol
+	      BaseProtocol.Base.Builder builtMessage = BaseProtocol.Base.newBuilder();
+	      builtMessage.setUserID(String.valueOf(userId));
+	      builtMessage.setSessionID("none");
+	      builtMessage.setDocument(et.getText().toString());
+	      
+	      
+	      // write to file
+	      byte dataToWrite[] = builtMessage.build().toByteArray();
+	      FileOutputStream out = new FileOutputStream(baseFile);
+	      out.write(dataToWrite);
+	      out.close();
+	      
+	      // make input stream
+	      FileInputStream baseFileInputStream = new FileInputStream(baseFile);
+	      
+	      // create and send basefile
+	      myClient.createSessionWithBase(sessionName, tags, password, 
+	    		  0, baseFileInputStream, createSessionListener, sessionListener);
+	      
+	      //myClient.createSession(sessionName, tags, password, 0,
+	      //    createSessionListener, sessionListener);
 	    }
 	    catch( CollabrifyException e )
 	    {
-	    	Log.w(TAG, "createSession() error");
+	    	Log.w(TAG, "doCreateSession() error");
 	    	onError(e);
+	    }catch( Exception e){
+	    	Log.w(TAG, "doCreateSession() error");
+	    	e.printStackTrace();
 	    }
 	  }
 	
@@ -425,10 +449,15 @@ public class MainActivity extends Activity implements
 	    catch( Exception e )
 	    {
 	      Log.e(TAG, "error", e);
+		    
+//		    if (!myClient.inSession()){
+		    	showToast("Invalid session ID");
+//		    }
+	      
 	    }
 	  }
 
-	  public void doLeaveSession()
+	public void doLeaveSession()
 	  {
 	    if( !myClient.inSession() )
 	    {
