@@ -280,12 +280,14 @@ public class MainActivity extends Activity implements
 	      //showToast("Sending Event...");
 	      EventProtocol.Event.Builder builtMessage = EventProtocol.Event.newBuilder();
 	      builtMessage.setEventID((Double.valueOf(Math.random())).intValue());
-	      builtMessage.setUserID(userId);
+	      
 	      
 	      if(e.userID == null)
 	    	  builtMessage.setUserID(userId);
 	      else
 	    	  builtMessage.setUserID(e.userID);
+	      
+	      builtMessage.setUserID(userId);
 	      
 	      if(e.sessionID == null)
 	    	  builtMessage.setSessionID(String.valueOf(sessionId));
