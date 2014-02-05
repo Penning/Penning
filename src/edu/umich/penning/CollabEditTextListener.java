@@ -133,7 +133,7 @@ public class CollabEditTextListener implements TextWatcher {
 		foreignEventHandle = true;
 //		e.cursorLocation += offset;
 		if(e.event == EventType.insert)
-			insert(e.text, e.cursorLocation - 1);
+			insert(e.text, e.cursorLocation);
 		else if(e.event == EventType.delete)
 			remove(e.cursorLocation);
 		lastCursorLocation = e.cursorLocation;
