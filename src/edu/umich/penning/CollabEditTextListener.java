@@ -65,6 +65,7 @@ public class CollabEditTextListener implements TextWatcher {
 		}
 		for (int i=0; i<num_undos; ++i){
 			foreignEventHandle = true;
+			myMainActivity.localOrderId++;
 			redo();
 		}
 		
