@@ -55,15 +55,17 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void onRemoteTextChange(Event e) {
 		
-		System.out.println("e.orderId: " + e.orderId + " | localOrderId: " + myMainActivity.localOrderId);
 		int num_undos = 0;
 		while (e.orderId < myMainActivity.localOrderId){
+			System.out.println("e.orderId: " + e.orderId + " | localOrderId: " + myMainActivity.localOrderId);
+			System.out.println("collision- undo'ing");
 			foreignEventHandle = true;
 			myMainActivity.localOrderId--;
 			undo();
 			num_undos++;
 		}
 		for (int i=0; i<num_undos; ++i){
+			System.out.println("collision- redo'ing");
 			foreignEventHandle = true;
 			myMainActivity.localOrderId++;
 			redo();
@@ -126,7 +128,8 @@ public class CollabEditTextListener implements TextWatcher {
 		else if(e.event == EventType.delete)
 			remove(e.cursorLocation);
 		
-		myMainActivity.BroadcastEvent(e);
+		if (!foreignEventHandle)
+			myMainActivity.BroadcastEvent(e);
 
 		if(e.event == EventType.insert)
 			e.event = EventType.delete;

@@ -275,6 +275,7 @@ public class MainActivity extends Activity implements
 	
 	public void BroadcastEvent(Event e)
 	{
+		System.out.println("Broadcasting!");
 	  if(e == null)
 	    return;
 	  if( myClient != null && myClient.inSession() )
