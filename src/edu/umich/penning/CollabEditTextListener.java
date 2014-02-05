@@ -54,8 +54,8 @@ public class CollabEditTextListener implements TextWatcher {
 	}
 	
 	public void onRemoteTextChange(Event e) {
-		foreignEventHandle = true;
 		
+		System.out.println("e.orderId: " + e.orderId + " | localOrderId: " + myMainActivity.localOrderId);
 		int num_undos = 0;
 		while (e.orderId <= myMainActivity.localOrderId){
 			foreignEventHandle = true;
@@ -67,6 +67,8 @@ public class CollabEditTextListener implements TextWatcher {
 			foreignEventHandle = true;
 			redo();
 		}
+		
+		foreignEventHandle = true;
 		
 		if(e.event == EventType.insert)
 			insert(e.text, e.cursorLocation - 1);
