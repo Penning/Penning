@@ -16,6 +16,11 @@ public class CollabEditTextListener implements TextWatcher {
 	public Vector<Event> redoStack = new Vector<Event>();
 	protected String fullText;
 	
+	private Vector<Event> localEvents = new Vector<Event>();
+	private Vector<Event> serverEvents = new Vector<Event>();
+	
+	public Event lastConfirmed = null;
+	
 	public boolean foreignEventHandle = false;
 	
 	private MainActivity myMainActivity;
@@ -32,7 +37,7 @@ public class CollabEditTextListener implements TextWatcher {
 			
 		}
 		if(text.length() > 0 && !MainActivity.undo_redo_action) {
-			Event e;
+			Event e = null;
 			if(lengthBefore < lengthAfter && MainActivity.et.getSelectionEnd() > 0) {
 				char c = text.toString().charAt(MainActivity.et.getSelectionEnd() - 1);
 				insertChar(c);
@@ -44,15 +49,77 @@ public class CollabEditTextListener implements TextWatcher {
 				fullText = text.toString();
 			}
 			fullText = text.toString();
+			localEvents.add(e);
+		}
+	}
+	
+	private void unwind(Event e) {
+		if(e.event == EventType.insert)
+			remove(e.cursorLocation);
+		else if(e.event == EventType.delete)
+			insert(e.text, e.cursorLocation);
+	}
+	
+	private void unwind() {
+		Vector<Event> local = new Vector<Event>();
+		Vector<Event> remote = new Vector<Event>();
+		
+		Event e = null;
+		while(localEvents.lastElement().text != lastConfirmed.text && !localEvents.isEmpty()) {
+			e = localEvents.lastElement();
+			local.add(e);
+			localEvents.remove(e);
+			unwind(e);
+		}
+		if(localEvents.lastElement().text == lastConfirmed.text) {
+			e = localEvents.lastElement();
+			local.add(e);
+			localEvents.remove(e);
+			unwind(e);
+		}
+		while(serverEvents.firstElement().globalOrder < lastConfirmed.globalOrder) {
+			e = serverEvents.firstElement();
+			remote.add(e);
+			serverEvents.remove(0);
+			unwind(e);
+		}
+		reapply(local, remote);
+	}
+	
+	private void reapply(Vector<Event> local, Vector<Event> remote) {
+		Event e = null;
+		while(!remote.isEmpty()) {
+			e = remote.firstElement();
+			if(e.event == EventType.insert)
+				insert(e.text, e.cursorLocation);
+			else if(e.event == EventType.delete)
+				remove(e.cursorLocation);
+			remote.remove(0);
+		}
+		while(!local.isEmpty() && local.size() > 1) {
+			e = local.lastElement();
+			if(e.event == EventType.insert)
+				insert(e.text, e.cursorLocation);
+			else if(e.event == EventType.delete)
+				remove(e.cursorLocation);
+			localEvents.add(e);
+			local.remove(e);
 		}
 	}
 	
 	public void onRemoteTextChange(Event e) {
+		if(e.userID == MainActivity.userId) {
+			lastConfirmed = e;
+			unwind();
+			return;
+		}
+
 		foreignEventHandle = true;
 		if(e.event == EventType.insert)
 			insert(e.text, e.cursorLocation - 1);
 		else if(e.event == EventType.delete)
 			remove(e.cursorLocation);
+		serverEvents.add(e);
 	}
 
 	private void insertChar(char c) {
@@ -111,6 +178,8 @@ public class CollabEditTextListener implements TextWatcher {
 		
 		MainActivity.undo_redo_action = false;
 		MainActivity.prev_undo = true;
+
+		localEvents.add(e);
 		return e;
 	}
 	

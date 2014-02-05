@@ -4,16 +4,18 @@ public class Event {
 
 	public String userID;
 	public String sessionID;
+	public long globalOrder;
 	
 	public EventType event;
 	public int cursorLocation;
 	public char text;
+	public boolean confirmed = false;
 	
 	Event(EventType e) {
 		event = e;
 	}
 	
-	Event(EventProtocol.Event e){
+	Event(EventProtocol.Event e, long orderId){
 		userID = e.getUserID();
 		sessionID = e.getSessionID();
 		switch(e.getType()){
@@ -37,5 +39,7 @@ public class Event {
 			text = e.getText().toCharArray()[0];
 		else
 			text = ' ';
+		confirmed = true;
+		globalOrder = orderId;
 	}
 }

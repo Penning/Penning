@@ -67,7 +67,7 @@ public class MainActivity extends Activity implements
 	private String sessionName;
 	private String password = "password";
 
-	private String userId;
+	public static String userId;
 
 	
 	// redundant but for the sake of readability
@@ -262,9 +262,9 @@ public class MainActivity extends Activity implements
 		
 		System.out.println("Event UserID: " + recievedEvent.getUserID());
 		System.out.println("My UserID: " + userId);
-		if(recievedEvent.getUserID().equals(userId)) return;
+//		if(recievedEvent.getUserID().equals(userId)) return;
 		
-		Event e1 = new Event(recievedEvent);
+		Event e1 = new Event(recievedEvent, orderId);
 		listener.onRemoteTextChange(e1);
 	}
 	
