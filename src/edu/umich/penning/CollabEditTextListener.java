@@ -126,8 +126,11 @@ public class CollabEditTextListener implements TextWatcher {
 		
 		//Need to offset cursors
 		int offset = 0;
-		if(lastConfirmed != null) 
-			e.cursorLocation = lastConfirmed.cursorLocation;
+		if(lastConfirmed != null) {
+			if(e.event == EventType.insert)
+				e.cursorLocation = lastConfirmed.cursorLocation + 1;
+			else e.cursorLocation = lastConfirmed.cursorLocation;
+		}
 
 		foreignEventHandle = true;
 //		e.cursorLocation += offset;
