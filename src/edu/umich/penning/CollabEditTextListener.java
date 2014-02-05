@@ -22,6 +22,7 @@ public class CollabEditTextListener implements TextWatcher {
 	public Event lastConfirmed = null;
 	
 	public boolean foreignEventHandle = false;
+	private boolean unwinding = false;
 	
 	private MainActivity myMainActivity;
 	
@@ -54,9 +55,9 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	private void unwind(Event e) {
 		if(e.event == EventType.insert)
-			insert(e.text, e.cursorLocation);
+			remove(e.cursorLocation - 1);
 		else if(e.event == EventType.delete)
-			remove(e.cursorLocation);
+			insert(e.text, e.cursorLocation);
 	}
 	
 	private void unwind() {
@@ -74,14 +75,7 @@ public class CollabEditTextListener implements TextWatcher {
 			localEvents.remove(e);
 			unwind(e);
 		}
-//		unwind(localEvents.lastElement());
-//		if(localEvents.lastElement().text == lastConfirmed.text) {
-//			Event e = localEvents.lastElement();
-//			local.add(e);
-//			localEvents.remove(e);
-//			unwind(e);
-//		}
-		while(!serverEvents.isEmpty() && serverEvents.firstElement().globalOrder < lastConfirmed.globalOrder) {
+		while(!serverEvents.isEmpty() && serverEvents.firstElement().globalOrder > lastConfirmed.globalOrder) {
 			Event e = serverEvents.firstElement();
 			remote.add(e);
 			serverEvents.remove(e);
@@ -94,16 +88,19 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	private void reapply(Vector<Event> local, Vector<Event> remote) {
 		Event e = null;
+		int cursor_offset = 0;
 		while(!remote.isEmpty()) {
 			e = remote.firstElement();
 			if(e.event == EventType.insert)
-				insert(e.text, e.cursorLocation);
-			else if(e.event == EventType.delete)
 				remove(e.cursorLocation);
+			else if(e.event == EventType.delete)
+				insert(e.text, e.cursorLocation);
 			remote.remove(e);
+			cursor_offset++;
 		}
-		while(!local.isEmpty()) {
+		while(local.size() > 1) {
 			e = local.lastElement();
+			e.cursorLocation += cursor_offset;
 			System.out.print("REAPPLYING: " + e.text);
 			if(e.event == EventType.insert)
 				remove(e.cursorLocation);
@@ -121,8 +118,10 @@ public class CollabEditTextListener implements TextWatcher {
 		
 		if(MainActivity.userId.equals(id)) {
 			System.out.println("same userID: " + id + " " + MainActivity.userId);
+			unwinding = true;
 			lastConfirmed = e;
 			unwind();
+			unwinding = false;
 			return;
 		}
 
@@ -230,7 +229,7 @@ public class CollabEditTextListener implements TextWatcher {
 	public void beforeTextChanged(CharSequence s, int start, int before, int after) {
 		if(before > after) fullText = s.toString();
 		
-		if(s.length() > 0 && !MainActivity.undo_redo_action) {
+		if(s.length() > 0 && !MainActivity.undo_redo_action && !unwinding) {
 			if(MainActivity.prev_undo || MainActivity.prev_redo) {
 				redoStack.removeAllElements();
 				MainActivity.prev_undo = false;
