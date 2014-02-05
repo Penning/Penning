@@ -106,7 +106,7 @@ public class MainActivity extends Activity implements
         
 
         // random userID
-        userId = String.valueOf( String.valueOf( Double.valueOf(Math.random() * 1000000.0).intValue() ) );
+        userId = String.valueOf( Double.valueOf( Math.random() * 1000000.0).intValue()  );
 
         
         tags.add("sample");
@@ -280,6 +280,8 @@ public class MainActivity extends Activity implements
 	      //showToast("Sending Event...");
 	      EventProtocol.Event.Builder builtMessage = EventProtocol.Event.newBuilder();
 	      builtMessage.setEventID((Double.valueOf(Math.random())).intValue());
+	      builtMessage.setUserID(userId);
+	      
 	      if(e.userID == null)
 	    	  builtMessage.setUserID(userId);
 	      else

@@ -18,7 +18,7 @@ public class Event {
 	}
 	
 	Event(EventProtocol.Event e, long orderId){
-		userID = e.getUserID();
+		//userID = e.getUserID();
 		sessionID = e.getSessionID();
 		switch(e.getType()){
 		case INSERT:
