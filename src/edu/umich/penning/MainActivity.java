@@ -242,7 +242,7 @@ public class MainActivity extends Activity implements
 
 	@Override
 	public void onParticipantJoined(CollabrifyParticipant p) {
-		showToast("Now entering: " + p.getDisplayName());
+		showToast("Another user has entered the session");
 	}
 
 	@Override
