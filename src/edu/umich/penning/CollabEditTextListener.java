@@ -126,6 +126,7 @@ public class CollabEditTextListener implements TextWatcher {
 		Event e = new Event(EventType.insert);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
+		localEvents.add(e);
 		myMainActivity.BroadcastEvent(e);
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
 		e.event = EventType.delete;
@@ -137,6 +138,7 @@ public class CollabEditTextListener implements TextWatcher {
 		Event e = new Event(EventType.delete);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
+		localEvents.add(e);
 		myMainActivity.BroadcastEvent(e);
 		System.out.println("Char removed: " + c + " @ " + (e.cursorLocation + 1));
 		e.event = EventType.insert;
