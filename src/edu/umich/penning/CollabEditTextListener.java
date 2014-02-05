@@ -49,9 +49,10 @@ public class CollabEditTextListener implements TextWatcher {
 	
 	public void onRemoteTextChange(Event e) {
 		foreignEventHandle = true;
+		
 		if(e.event == EventType.insert)
 			insert(e.text, e.cursorLocation - 1);
-		else if(e.event == EventType.delete)
+		else if(e.event == EventType.delete && e.cursorLocation <= MainActivity.et.getText().length())
 			remove(e.cursorLocation);
 	}
 
