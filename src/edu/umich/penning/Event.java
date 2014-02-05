@@ -15,6 +15,7 @@ public class Event {
 	
 	Event(EventType e) {
 		event = e;
+		userID = MainActivity.userId;
 	}
 	
 	Event(EventProtocol.Event e, long orderId){

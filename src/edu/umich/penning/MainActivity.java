@@ -266,7 +266,7 @@ public class MainActivity extends Activity implements
 		
 		Event e1 = new Event(recievedEvent, orderId);
 		
-		listener.onRemoteTextChange(e1);
+		listener.onRemoteTextChange(e1, recievedEvent.getUserID());
 	}
 	
 	public void BroadcastEvent(Event e)

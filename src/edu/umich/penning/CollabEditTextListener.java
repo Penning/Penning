@@ -114,12 +114,13 @@ public class CollabEditTextListener implements TextWatcher {
 		}
 	}
 	
-	public void onRemoteTextChange(Event e) {
+	public void onRemoteTextChange(Event e, String id) {
 		if(e.event == EventType.insert) System.out.println("RETURNED EVENT IS AN INSERT");
 		else if(e.event == EventType.delete) System.out.println("RETURNED EVENT IS A DELETE");
-		System.out.println("userID: " + e.userID + " " + MainActivity.userId);
-		if(e.userID.equals(MainActivity.userId)) {
-			System.out.println("same userID: " + e.userID + " " + MainActivity.userId);
+		System.out.println("userID: " + id + " " + MainActivity.userId);
+		
+		if(MainActivity.userId.equals(id)) {
+			System.out.println("same userID: " + id + " " + MainActivity.userId);
 			lastConfirmed = e;
 			unwind();
 			return;
@@ -137,6 +138,7 @@ public class CollabEditTextListener implements TextWatcher {
 		Event e = new Event(EventType.insert);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
+		e.userID = MainActivity.userId;
 		myMainActivity.BroadcastEvent(e);
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
 		e.event = EventType.delete;
@@ -149,6 +151,7 @@ public class CollabEditTextListener implements TextWatcher {
 		Event e = new Event(EventType.delete);
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
+		e.userID = MainActivity.userId;
 		myMainActivity.BroadcastEvent(e);
 		System.out.println("Char removed: " + c + " @ " + (e.cursorLocation + 1));
 		e.event = EventType.insert;
