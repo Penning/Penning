@@ -68,7 +68,7 @@ public class CollabEditTextListener implements TextWatcher {
 		System.out.println("SIZE: " + localEvents.size());
 		System.out.println("lastConfirmed: " + lastConfirmed.text);
 		System.out.println("Last localEvents: " + localEvents.lastElement().text);
-		while(localEvents.lastElement().text != lastConfirmed.text) {
+		while(localEvents.lastElement().eventId != lastConfirmed.eventId) {
 			Event e = localEvents.lastElement();
 			local.add(e);
 			localEvents.remove(e);

@@ -279,6 +279,7 @@ public class MainActivity extends Activity implements
 	    {
 	      //showToast("Sending Event...");
 	      EventProtocol.Event.Builder builtMessage = EventProtocol.Event.newBuilder();
+	      builtMessage.setEventID((Double.valueOf(Math.random())).intValue());
 	      if(e.userID == null)
 	    	  builtMessage.setUserID(userId);
 	      else
