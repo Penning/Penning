@@ -41,37 +41,47 @@ public final class EventProtocol {
     com.google.protobuf.ByteString
         getSessionIDBytes();
 
-    // required .penning.Event.EventType type = 3;
+    // required int32 eventID = 3;
     /**
-     * <code>required .penning.Event.EventType type = 3;</code>
+     * <code>required int32 eventID = 3;</code>
+     */
+    boolean hasEventID();
+    /**
+     * <code>required int32 eventID = 3;</code>
+     */
+    int getEventID();
+
+    // required .penning.Event.EventType type = 4;
+    /**
+     * <code>required .penning.Event.EventType type = 4;</code>
      */
     boolean hasType();
     /**
-     * <code>required .penning.Event.EventType type = 3;</code>
+     * <code>required .penning.Event.EventType type = 4;</code>
      */
     edu.umich.penning.EventProtocol.Event.EventType getType();
 
-    // optional int32 cursorLocation = 4;
+    // optional int32 cursorLocation = 5;
     /**
-     * <code>optional int32 cursorLocation = 4;</code>
+     * <code>optional int32 cursorLocation = 5;</code>
      */
     boolean hasCursorLocation();
     /**
-     * <code>optional int32 cursorLocation = 4;</code>
+     * <code>optional int32 cursorLocation = 5;</code>
      */
     int getCursorLocation();
 
-    // optional string text = 5;
+    // optional string text = 6;
     /**
-     * <code>optional string text = 5;</code>
+     * <code>optional string text = 6;</code>
      */
     boolean hasText();
     /**
-     * <code>optional string text = 5;</code>
+     * <code>optional string text = 6;</code>
      */
     java.lang.String getText();
     /**
-     * <code>optional string text = 5;</code>
+     * <code>optional string text = 6;</code>
      */
     com.google.protobuf.ByteString
         getTextBytes();
@@ -138,23 +148,28 @@ public final class EventProtocol {
               break;
             }
             case 24: {
+              bitField0_ |= 0x00000004;
+              eventID_ = input.readInt32();
+              break;
+            }
+            case 32: {
               int rawValue = input.readEnum();
               edu.umich.penning.EventProtocol.Event.EventType value = edu.umich.penning.EventProtocol.Event.EventType.valueOf(rawValue);
               if (value == null) {
-                unknownFields.mergeVarintField(3, rawValue);
+                unknownFields.mergeVarintField(4, rawValue);
               } else {
-                bitField0_ |= 0x00000004;
+                bitField0_ |= 0x00000008;
                 type_ = value;
               }
               break;
             }
-            case 32: {
-              bitField0_ |= 0x00000008;
+            case 40: {
+              bitField0_ |= 0x00000010;
               cursorLocation_ = input.readInt32();
               break;
             }
-            case 42: {
-              bitField0_ |= 0x00000010;
+            case 50: {
+              bitField0_ |= 0x00000020;
               text_ = input.readBytes();
               break;
             }
@@ -393,49 +408,65 @@ public final class EventProtocol {
       }
     }
 
-    // required .penning.Event.EventType type = 3;
-    public static final int TYPE_FIELD_NUMBER = 3;
-    private edu.umich.penning.EventProtocol.Event.EventType type_;
+    // required int32 eventID = 3;
+    public static final int EVENTID_FIELD_NUMBER = 3;
+    private int eventID_;
     /**
-     * <code>required .penning.Event.EventType type = 3;</code>
+     * <code>required int32 eventID = 3;</code>
      */
-    public boolean hasType() {
+    public boolean hasEventID() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     /**
-     * <code>required .penning.Event.EventType type = 3;</code>
+     * <code>required int32 eventID = 3;</code>
+     */
+    public int getEventID() {
+      return eventID_;
+    }
+
+    // required .penning.Event.EventType type = 4;
+    public static final int TYPE_FIELD_NUMBER = 4;
+    private edu.umich.penning.EventProtocol.Event.EventType type_;
+    /**
+     * <code>required .penning.Event.EventType type = 4;</code>
+     */
+    public boolean hasType() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>required .penning.Event.EventType type = 4;</code>
      */
     public edu.umich.penning.EventProtocol.Event.EventType getType() {
       return type_;
     }
 
-    // optional int32 cursorLocation = 4;
-    public static final int CURSORLOCATION_FIELD_NUMBER = 4;
+    // optional int32 cursorLocation = 5;
+    public static final int CURSORLOCATION_FIELD_NUMBER = 5;
     private int cursorLocation_;
     /**
-     * <code>optional int32 cursorLocation = 4;</code>
+     * <code>optional int32 cursorLocation = 5;</code>
      */
     public boolean hasCursorLocation() {
-      return ((bitField0_ & 0x00000008) == 0x00000008);
+      return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     /**
-     * <code>optional int32 cursorLocation = 4;</code>
+     * <code>optional int32 cursorLocation = 5;</code>
      */
     public int getCursorLocation() {
       return cursorLocation_;
     }
 
-    // optional string text = 5;
-    public static final int TEXT_FIELD_NUMBER = 5;
+    // optional string text = 6;
+    public static final int TEXT_FIELD_NUMBER = 6;
     private java.lang.Object text_;
     /**
-     * <code>optional string text = 5;</code>
+     * <code>optional string text = 6;</code>
      */
     public boolean hasText() {
-      return ((bitField0_ & 0x00000010) == 0x00000010);
+      return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     /**
-     * <code>optional string text = 5;</code>
+     * <code>optional string text = 6;</code>
      */
     public java.lang.String getText() {
       java.lang.Object ref = text_;
@@ -452,7 +483,7 @@ public final class EventProtocol {
       }
     }
     /**
-     * <code>optional string text = 5;</code>
+     * <code>optional string text = 6;</code>
      */
     public com.google.protobuf.ByteString
         getTextBytes() {
@@ -471,6 +502,7 @@ public final class EventProtocol {
     private void initFields() {
       userID_ = "";
       sessionID_ = "";
+      eventID_ = 0;
       type_ = edu.umich.penning.EventProtocol.Event.EventType.INSERT;
       cursorLocation_ = 0;
       text_ = "";
@@ -485,6 +517,10 @@ public final class EventProtocol {
         return false;
       }
       if (!hasSessionID()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
+      if (!hasEventID()) {
         memoizedIsInitialized = 0;
         return false;
       }
@@ -506,13 +542,16 @@ public final class EventProtocol {
         output.writeBytes(2, getSessionIDBytes());
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeEnum(3, type_.getNumber());
+        output.writeInt32(3, eventID_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeInt32(4, cursorLocation_);
+        output.writeEnum(4, type_.getNumber());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
-        output.writeBytes(5, getTextBytes());
+        output.writeInt32(5, cursorLocation_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        output.writeBytes(6, getTextBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -533,15 +572,19 @@ public final class EventProtocol {
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(3, type_.getNumber());
+          .computeInt32Size(3, eventID_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(4, cursorLocation_);
+          .computeEnumSize(4, type_.getNumber());
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(5, getTextBytes());
+          .computeInt32Size(5, cursorLocation_);
+      }
+      if (((bitField0_ & 0x00000020) == 0x00000020)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(6, getTextBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -663,12 +706,14 @@ public final class EventProtocol {
         bitField0_ = (bitField0_ & ~0x00000001);
         sessionID_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
-        type_ = edu.umich.penning.EventProtocol.Event.EventType.INSERT;
+        eventID_ = 0;
         bitField0_ = (bitField0_ & ~0x00000004);
-        cursorLocation_ = 0;
+        type_ = edu.umich.penning.EventProtocol.Event.EventType.INSERT;
         bitField0_ = (bitField0_ & ~0x00000008);
-        text_ = "";
+        cursorLocation_ = 0;
         bitField0_ = (bitField0_ & ~0x00000010);
+        text_ = "";
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -708,13 +753,17 @@ public final class EventProtocol {
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.type_ = type_;
+        result.eventID_ = eventID_;
         if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
           to_bitField0_ |= 0x00000008;
         }
-        result.cursorLocation_ = cursorLocation_;
+        result.type_ = type_;
         if (((from_bitField0_ & 0x00000010) == 0x00000010)) {
           to_bitField0_ |= 0x00000010;
+        }
+        result.cursorLocation_ = cursorLocation_;
+        if (((from_bitField0_ & 0x00000020) == 0x00000020)) {
+          to_bitField0_ |= 0x00000020;
         }
         result.text_ = text_;
         result.bitField0_ = to_bitField0_;
@@ -743,6 +792,9 @@ public final class EventProtocol {
           sessionID_ = other.sessionID_;
           onChanged();
         }
+        if (other.hasEventID()) {
+          setEventID(other.getEventID());
+        }
         if (other.hasType()) {
           setType(other.getType());
         }
@@ -750,7 +802,7 @@ public final class EventProtocol {
           setCursorLocation(other.getCursorLocation());
         }
         if (other.hasText()) {
-          bitField0_ |= 0x00000010;
+          bitField0_ |= 0x00000020;
           text_ = other.text_;
           onChanged();
         }
@@ -764,6 +816,10 @@ public final class EventProtocol {
           return false;
         }
         if (!hasSessionID()) {
+          
+          return false;
+        }
+        if (!hasEventID()) {
           
           return false;
         }
@@ -941,85 +997,118 @@ public final class EventProtocol {
         return this;
       }
 
-      // required .penning.Event.EventType type = 3;
-      private edu.umich.penning.EventProtocol.Event.EventType type_ = edu.umich.penning.EventProtocol.Event.EventType.INSERT;
+      // required int32 eventID = 3;
+      private int eventID_ ;
       /**
-       * <code>required .penning.Event.EventType type = 3;</code>
+       * <code>required int32 eventID = 3;</code>
        */
-      public boolean hasType() {
+      public boolean hasEventID() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
       /**
-       * <code>required .penning.Event.EventType type = 3;</code>
+       * <code>required int32 eventID = 3;</code>
+       */
+      public int getEventID() {
+        return eventID_;
+      }
+      /**
+       * <code>required int32 eventID = 3;</code>
+       */
+      public Builder setEventID(int value) {
+        bitField0_ |= 0x00000004;
+        eventID_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required int32 eventID = 3;</code>
+       */
+      public Builder clearEventID() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        eventID_ = 0;
+        onChanged();
+        return this;
+      }
+
+      // required .penning.Event.EventType type = 4;
+      private edu.umich.penning.EventProtocol.Event.EventType type_ = edu.umich.penning.EventProtocol.Event.EventType.INSERT;
+      /**
+       * <code>required .penning.Event.EventType type = 4;</code>
+       */
+      public boolean hasType() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>required .penning.Event.EventType type = 4;</code>
        */
       public edu.umich.penning.EventProtocol.Event.EventType getType() {
         return type_;
       }
       /**
-       * <code>required .penning.Event.EventType type = 3;</code>
+       * <code>required .penning.Event.EventType type = 4;</code>
        */
       public Builder setType(edu.umich.penning.EventProtocol.Event.EventType value) {
         if (value == null) {
           throw new NullPointerException();
         }
-        bitField0_ |= 0x00000004;
+        bitField0_ |= 0x00000008;
         type_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>required .penning.Event.EventType type = 3;</code>
+       * <code>required .penning.Event.EventType type = 4;</code>
        */
       public Builder clearType() {
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         type_ = edu.umich.penning.EventProtocol.Event.EventType.INSERT;
         onChanged();
         return this;
       }
 
-      // optional int32 cursorLocation = 4;
+      // optional int32 cursorLocation = 5;
       private int cursorLocation_ ;
       /**
-       * <code>optional int32 cursorLocation = 4;</code>
+       * <code>optional int32 cursorLocation = 5;</code>
        */
       public boolean hasCursorLocation() {
-        return ((bitField0_ & 0x00000008) == 0x00000008);
+        return ((bitField0_ & 0x00000010) == 0x00000010);
       }
       /**
-       * <code>optional int32 cursorLocation = 4;</code>
+       * <code>optional int32 cursorLocation = 5;</code>
        */
       public int getCursorLocation() {
         return cursorLocation_;
       }
       /**
-       * <code>optional int32 cursorLocation = 4;</code>
+       * <code>optional int32 cursorLocation = 5;</code>
        */
       public Builder setCursorLocation(int value) {
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000010;
         cursorLocation_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional int32 cursorLocation = 4;</code>
+       * <code>optional int32 cursorLocation = 5;</code>
        */
       public Builder clearCursorLocation() {
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         cursorLocation_ = 0;
         onChanged();
         return this;
       }
 
-      // optional string text = 5;
+      // optional string text = 6;
       private java.lang.Object text_ = "";
       /**
-       * <code>optional string text = 5;</code>
+       * <code>optional string text = 6;</code>
        */
       public boolean hasText() {
-        return ((bitField0_ & 0x00000010) == 0x00000010);
+        return ((bitField0_ & 0x00000020) == 0x00000020);
       }
       /**
-       * <code>optional string text = 5;</code>
+       * <code>optional string text = 6;</code>
        */
       public java.lang.String getText() {
         java.lang.Object ref = text_;
@@ -1033,7 +1122,7 @@ public final class EventProtocol {
         }
       }
       /**
-       * <code>optional string text = 5;</code>
+       * <code>optional string text = 6;</code>
        */
       public com.google.protobuf.ByteString
           getTextBytes() {
@@ -1049,36 +1138,36 @@ public final class EventProtocol {
         }
       }
       /**
-       * <code>optional string text = 5;</code>
+       * <code>optional string text = 6;</code>
        */
       public Builder setText(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  bitField0_ |= 0x00000020;
         text_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string text = 5;</code>
+       * <code>optional string text = 6;</code>
        */
       public Builder clearText() {
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         text_ = getDefaultInstance().getText();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string text = 5;</code>
+       * <code>optional string text = 6;</code>
        */
       public Builder setTextBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000010;
+  bitField0_ |= 0x00000020;
         text_ = value;
         onChanged();
         return this;
@@ -1109,13 +1198,14 @@ public final class EventProtocol {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\013Event.proto\022\007penning\"\314\001\n\005Event\022\016\n\006user" +
-      "ID\030\001 \002(\t\022\021\n\tsessionID\030\002 \002(\t\022&\n\004type\030\003 \002(" +
-      "\0162\030.penning.Event.EventType\022\026\n\016cursorLoc" +
-      "ation\030\004 \001(\005\022\014\n\004text\030\005 \001(\t\"R\n\tEventType\022\n" +
-      "\n\006INSERT\020\000\022\n\n\006DELETE\020\001\022\010\n\004UNDO\020\002\022\010\n\004REDO" +
-      "\020\003\022\031\n\025CURSORLOCATIONCHANGED\020\004B\"\n\021edu.umi" +
-      "ch.penningB\rEventProtocol"
+      "\n\013Event.proto\022\007penning\"\335\001\n\005Event\022\016\n\006user" +
+      "ID\030\001 \002(\t\022\021\n\tsessionID\030\002 \002(\t\022\017\n\007eventID\030\003" +
+      " \002(\005\022&\n\004type\030\004 \002(\0162\030.penning.Event.Event" +
+      "Type\022\026\n\016cursorLocation\030\005 \001(\005\022\014\n\004text\030\006 \001" +
+      "(\t\"R\n\tEventType\022\n\n\006INSERT\020\000\022\n\n\006DELETE\020\001\022" +
+      "\010\n\004UNDO\020\002\022\010\n\004REDO\020\003\022\031\n\025CURSORLOCATIONCHA" +
+      "NGED\020\004B\"\n\021edu.umich.penningB\rEventProtoc" +
+      "ol"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
       new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
@@ -1127,7 +1217,7 @@ public final class EventProtocol {
           internal_static_penning_Event_fieldAccessorTable = new
             com.google.protobuf.GeneratedMessage.FieldAccessorTable(
               internal_static_penning_Event_descriptor,
-              new java.lang.String[] { "UserID", "SessionID", "Type", "CursorLocation", "Text", });
+              new java.lang.String[] { "UserID", "SessionID", "EventID", "Type", "CursorLocation", "Text", });
           return null;
         }
       };

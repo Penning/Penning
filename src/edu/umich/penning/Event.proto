@@ -6,7 +6,7 @@ message Event {
 
 	required string userID = 1;
 	required string sessionID = 2;
-	required int32 eventId = 3;
+	required int32 eventID = 3;
 
 	enum EventType {
     	INSERT = 0;
