@@ -8,6 +8,7 @@ public class Event {
 	public EventType event;
 	public int cursorLocation;
 	public char text;
+	public int eventId;
 	
 	Event(EventType e) {
 		event = e;
@@ -33,9 +34,11 @@ public class Event {
 			break;
 		}
 		cursorLocation = e.getCursorLocation();
+		eventId = e.getEventID();
 		if(e.getText().length() >= 1)
 			text = e.getText().toCharArray()[0];
 		else
 			text = ' ';
+		
 	}
 }
