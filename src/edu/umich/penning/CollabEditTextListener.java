@@ -49,15 +49,14 @@ public class CollabEditTextListener implements TextWatcher {
 				fullText = text.toString();
 			}
 			fullText = text.toString();
-			localEvents.add(e);
 		}
 	}
 	
 	private void unwind(Event e) {
 		if(e.event == EventType.insert)
-			remove(e.cursorLocation);
-		else if(e.event == EventType.delete)
 			insert(e.text, e.cursorLocation);
+		else if(e.event == EventType.delete)
+			remove(e.cursorLocation);
 	}
 	
 	private void unwind() {
@@ -81,7 +80,7 @@ public class CollabEditTextListener implements TextWatcher {
 			localEvents.remove(e);
 			unwind(e);
 		}
-		while(serverEvents.firstElement().globalOrder < lastConfirmed.globalOrder) {
+		while(!serverEvents.isEmpty() && serverEvents.firstElement().globalOrder < lastConfirmed.globalOrder) {
 			Event e = serverEvents.firstElement();
 			remote.add(e);
 			serverEvents.remove(0);
@@ -100,12 +99,12 @@ public class CollabEditTextListener implements TextWatcher {
 				remove(e.cursorLocation);
 			remote.remove(0);
 		}
-		while(!local.isEmpty() && local.size() > 1) {
+		while(!local.isEmpty()) {
 			e = local.lastElement();
 			if(e.event == EventType.insert)
-				insert(e.text, e.cursorLocation);
-			else if(e.event == EventType.delete)
 				remove(e.cursorLocation);
+			else if(e.event == EventType.delete)
+				insert(e.text, e.cursorLocation);
 			localEvents.add(e);
 			local.remove(e);
 		}
@@ -132,6 +131,7 @@ public class CollabEditTextListener implements TextWatcher {
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		myMainActivity.BroadcastEvent(e);
+		localEvents.add(e);
 		System.out.println("Char inserted: " + c + " @ " + e.cursorLocation);
 		e.event = EventType.delete;
 		e.cursorLocation -= 1;
@@ -143,6 +143,7 @@ public class CollabEditTextListener implements TextWatcher {
 		e.text = c;
 		e.cursorLocation = MainActivity.et.getSelectionEnd();
 		myMainActivity.BroadcastEvent(e);
+		localEvents.add(e);
 		System.out.println("Char removed: " + c + " @ " + (e.cursorLocation + 1));
 		e.event = EventType.insert;
 		undoStack.add(e);
